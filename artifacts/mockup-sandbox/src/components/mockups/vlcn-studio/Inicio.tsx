@@ -26,11 +26,11 @@ export default function Inicio() {
           <div className="flex flex-col justify-center px-6 md:px-16 py-20 lg:py-0 order-2 lg:order-1">
             <span className="font-mono text-xs text-accent tracking-widest mb-6">¿QUÉ SOMOS?</span>
             <h2 className="text-4xl md:text-6xl font-bold tracking-tighter leading-[0.95] mb-8">
-              UN TALLER DE
+              LÍDER EN DISEÑOS
               <br />
-              CUSTOMIZACIÓN
+              PERSONALIZADOS
               <br />
-              TÉCNICA.
+              DE LA ZONA.
             </h2>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-md mb-4">
               Te personalizamos tu prenda con tus diseños favoritos de personajes de
