@@ -99,11 +99,9 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border/40 px-6 py-4 flex items-center justify-between">
         <button
           onClick={() => { window.location.href = '/__mockup/preview/vlcn-studio/Inicio'; }}
-          className="flex items-center gap-4 hover:opacity-70 transition-opacity"
+          className="flex items-center gap-3 hover:opacity-70 transition-opacity"
         >
-          <div className="w-8 h-8 bg-foreground flex items-center justify-center text-background font-mono font-bold text-xs">
-            VL
-          </div>
+          <img src="/__mockup/generated_images/vlcn-logo.png" alt="VLCN Studio" className="h-8 w-auto object-contain" />
           <h1 className="font-bold tracking-tighter text-xl">VLCN STUDIO</h1>
         </button>
         <div className="flex items-center gap-6 text-sm font-mono">
