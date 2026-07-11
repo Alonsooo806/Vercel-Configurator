@@ -33,20 +33,20 @@ export default function Inicio() {
               TÉCNICA.
             </h2>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-md mb-4">
-              VLCN STUDIO no es una tienda de ropa. Somos un taller de precisión donde cada
-              prenda se construye a partir de especificaciones reales: gramaje de tela,
-              técnica de estampado y ubicación exacta.
+              Te personalizamos tu prenda con tus diseños favoritos de personajes de
+              películas, series, artistas y futbolistas. También puedes subir la foto
+              que quieras para que hagamos el resto.
             </p>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-md mb-10">
-              Cada colaboración pasa por inspección manual antes de salir del taller.
-              Diseñas la ficha técnica de tu prenda, nosotros la fabricamos.
+              Estamos ubicados en Barrio Vista Volcán, San Pablo, Temuco. 📌 ¡Haz tus
+              pedidos que nosotros hacemos el resto!
             </p>
 
             <button
               onClick={goToConfigurador}
               className="group inline-flex items-center gap-3 bg-foreground text-background px-8 py-4 font-mono text-sm font-bold tracking-wide w-fit hover:bg-accent transition-colors"
             >
-              ENTRAR AL CONFIGURADOR
+              PERSONALIZA AQUÍ
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
 
