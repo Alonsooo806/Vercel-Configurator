@@ -48,7 +48,7 @@ export default function Inicio() {
               que quieras para que hagamos el resto.
             </p>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-md mb-10">
-              Estamos ubicados en Barrio Vista Volcán, San Pablo, Temuco. 📌 ¡Haz tus
+              Estamos ubicados en Temuco, salida norte. 📌 ¡Haz tus
               pedidos que nosotros hacemos el resto!
             </p>
 
