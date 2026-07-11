@@ -10,10 +10,10 @@ import {
 const BASES = [
   { 
     id: 'tee', 
-    name: 'HEAVYWEIGHT BOX TEE', 
+    name: 'CAMISETA MANGA CORTA', 
     price: 45, 
     specs: '100% Algodón Peinado, 220 g/m²', 
-    fit: 'Boxy / Oversized',
+    fitLabel: 'TALLA: S, M, L, XL, XXL',
     img: '/__mockup/generated_images/vlcn-base-tee.jpg' 
   },
   { 
@@ -21,15 +21,15 @@ const BASES = [
     name: 'TECH FLEECE HOODIE', 
     price: 85, 
     specs: 'Algodón/Poliéster 400 g/m²', 
-    fit: 'Relaxed',
+    fitLabel: 'FIT: Relaxed',
     img: '/__mockup/generated_images/vlcn-base-hoodie.jpg' 
   },
   { 
     id: 'longsleeve', 
-    name: 'UTILITY LONGSLEEVE', 
+    name: 'SUBE LA FOTO DE TU DISEÑO', 
     price: 55, 
     specs: '100% Algodón Orgánico, 200 g/m²', 
-    fit: 'Standard',
+    fitLabel: 'TALLA: ELIGE LA TALLA QUE QUIERAS',
     img: '/__mockup/generated_images/vlcn-base-longsleeve.jpg' 
   }
 ];
@@ -157,16 +157,11 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                     >
                       <div className="aspect-square bg-muted mb-4 overflow-hidden relative">
                         <img src={b.img} alt={b.name} className={`w-full h-full object-cover transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
-                        {selectedBase === b.id && (
-                          <div className="absolute top-2 right-2 bg-accent text-white p-1">
-                            <Check className="w-4 h-4" />
-                          </div>
-                        )}
                       </div>
                       <h4 className="font-bold tracking-tight mb-2">{b.name}</h4>
                       <div className="font-mono text-xs text-muted-foreground space-y-1">
                         <p>{b.specs}</p>
-                        <p>FIT: {b.fit}</p>
+                        <p>{b.fitLabel}</p>
                       </div>
                     </button>
                   ))}
