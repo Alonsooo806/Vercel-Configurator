@@ -14,7 +14,7 @@ const BASES = [
     price: 4000, 
     specs: '100% Algodón Peinado, 220 g/m²', 
     fitLabel: 'TALLA: S, M, L, XL, XXL',
-    img: '/__mockup/generated_images/vlcn-base-tee.jpg' 
+    img: '/__mockup/generated_images/vlcn-base-tee.png' 
   },
   { 
     id: 'longsleeve', 
