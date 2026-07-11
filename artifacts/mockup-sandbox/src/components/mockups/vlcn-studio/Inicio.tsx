@@ -1,10 +1,20 @@
-import React from 'react';
-import { ArrowRight, ShieldCheck, Ruler, Droplets } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, ChevronRight, ShieldCheck, Ruler, Droplets } from 'lucide-react';
+
+const SLIDES = [
+  '/__mockup/generated_images/vlcn-inicio-slide-1.jpg',
+  '/__mockup/generated_images/vlcn-inicio-slide-2.jpg',
+  '/__mockup/generated_images/vlcn-inicio-slide-3.png',
+];
 
 export default function Inicio() {
+  const [slide, setSlide] = useState(0);
+
   const goToConfigurador = () => {
     window.location.href = '/__mockup/preview/vlcn-studio/ConfiguradorPremium';
   };
+
+  const nextSlide = () => setSlide((prev) => (prev + 1) % SLIDES.length);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-accent selection:text-white">
@@ -67,14 +77,38 @@ export default function Inicio() {
             </div>
           </div>
 
-          {/* RIGHT: IMAGE */}
-          <div className="relative min-h-[420px] lg:min-h-screen order-1 lg:order-2">
-            <img
-              src="/__mockup/generated_images/vlcn-inicio-hero.jpg"
-              alt="Prenda técnica VLCN Studio"
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-l from-background/60 via-transparent to-transparent" />
+          {/* RIGHT: IMAGE SLIDER */}
+          <div className="relative min-h-[420px] lg:min-h-screen order-1 lg:order-2 overflow-hidden">
+            {SLIDES.map((src, i) => (
+              <img
+                key={src}
+                src={src}
+                alt={`Personalización VLCN Studio ${i + 1}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${i === slide ? 'opacity-100' : 'opacity-0'}`}
+              />
+            ))}
+            <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-l from-background/60 via-transparent to-transparent pointer-events-none" />
+
+            {/* NEXT ARROW */}
+            <button
+              onClick={nextSlide}
+              aria-label="Siguiente imagen"
+              className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm border border-border/40 flex items-center justify-center hover:bg-accent hover:text-white transition-colors"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            {/* DOTS */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
+              {SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSlide(i)}
+                  aria-label={`Ir a la imagen ${i + 1}`}
+                  className={`h-1.5 rounded-full transition-all ${i === slide ? 'w-6 bg-accent' : 'w-1.5 bg-background/70'}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
