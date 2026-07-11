@@ -26,6 +26,12 @@ const BASES = [
   }
 ];
 
+const COLORS = [
+  { id: 'negro', name: 'NEGRO', img: '/__mockup/generated_images/vlcn-base-tee-color1.png' },
+  { id: 'blanco', name: 'BLANCO', img: '/__mockup/generated_images/vlcn-base-tee-color2.png' },
+  { id: 'multicolor', name: 'COLOR', img: '/__mockup/generated_images/vlcn-base-tee-color3.png' }
+];
+
 const PRINTS = [
   { id: 'brutalist', name: 'BRUTALIST ARCHIVE', img: '/__mockup/generated_images/vlcn-print-brutalist.jpg' },
   { id: 'schematic', name: 'CYBER SCHEMATIC', img: '/__mockup/generated_images/vlcn-print-schematic.jpg' }
@@ -88,10 +94,16 @@ export default function ConfiguradorPremium() {
   const [paymentMethod, setPaymentMethod] = useState<'tarjeta' | 'onepay'>('tarjeta');
   const [cardNumber, setCardNumber] = useState('');
 
+  const [selectedColor, setSelectedColor] = useState(COLORS[1].id); // blanco
+
   // --- DERIVED STATE ---
   const base = BASES.find(b => b.id === selectedBase)!;
   const print = PRINTS.find(p => p.id === selectedPrint)!;
   const placement = PLACEMENTS.find(p => p.id === selectedPlacement)!;
+  const colorIndex = COLORS.findIndex(c => c.id === selectedColor);
+  const currentColor = COLORS[colorIndex];
+  const nextColor = () => setSelectedColor(COLORS[(colorIndex + 1) % COLORS.length].id);
+  const viewerImg = selectedBase === 'tee' ? currentColor.img : base.img;
   
   const unitPrice = base.price + PRINT_PRICE;
   const subtotal = unitPrice * quantity;
@@ -182,20 +194,42 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {BASES.map(b => (
-                    <button 
+                    <div 
                       key={b.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => setSelectedBase(b.id)}
-                      className={`group text-left relative border p-4 transition-all duration-300 ${selectedBase === b.id ? 'border-accent ring-1 ring-accent' : 'border-border hover:border-foreground/50'}`}
+                      onKeyDown={(e) => { if (e.key === 'Enter') setSelectedBase(b.id); }}
+                      className={`group text-left relative border p-4 transition-all duration-300 cursor-pointer ${selectedBase === b.id ? 'border-accent ring-1 ring-accent' : 'border-border hover:border-foreground/50'}`}
                     >
                       <div className="aspect-square bg-muted mb-4 overflow-hidden relative">
-                        <img src={b.img} alt={b.name} className={`w-full h-full object-cover transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
+                        {b.id === 'tee' ? (
+                          <>
+                            <img src={currentColor.img} alt={`${b.name} - ${currentColor.name}`} className={`w-full h-full object-cover transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
+                            <button
+                              onClick={(e) => { e.stopPropagation(); nextColor(); }}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-foreground rounded-full p-2 shadow-lg transition-transform hover:scale-110"
+                              aria-label="Ver siguiente color"
+                            >
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                              {COLORS.map(c => (
+                                <span key={c.id} className={`w-1.5 h-1.5 rounded-full transition-colors ${c.id === selectedColor ? 'bg-white' : 'bg-white/40'}`} />
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <img src={b.img} alt={b.name} className={`w-full h-full object-cover transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
+                        )}
                       </div>
                       <h4 className="font-bold tracking-tight mb-2">{b.name}</h4>
                       <div className="font-mono text-xs text-muted-foreground space-y-1">
                         <p>{b.specs}</p>
                         <p>{b.fitLabel}</p>
+                        {b.id === 'tee' && <p>COLOR: {currentColor.name}</p>}
                       </div>
-                    </button>
+                    </div>
                   ))}
                 </div>
 
@@ -277,7 +311,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                   <div className="bg-background/80 backdrop-blur font-mono text-[10px] px-3 py-1 border border-border">INSPECCIÓN X-RAY</div>
                 </div>
                 <img 
-                  src={base.img} 
+                  src={viewerImg} 
                   alt="Vista Detallada" 
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.35] origin-center"
                 />
@@ -310,6 +344,30 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                     </div>
                   </div>
                 </div>
+
+                {selectedBase === 'tee' && (
+                  <div className="mb-10">
+                    <h4 className="font-mono text-xs font-bold mb-4">ELIGE TU COLOR:</h4>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div className="flex gap-3">
+                        {COLORS.map(c => (
+                          <button
+                            key={c.id}
+                            onClick={() => setSelectedColor(c.id)}
+                            className={`w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${selectedColor === c.id ? 'border-accent ring-2 ring-accent/30' : 'border-border hover:border-foreground/40'}`}
+                            title={c.name}
+                          >
+                            <img src={c.img} alt={c.name} className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-3 border-l border-border/60 pl-4">
+                        <img src={currentColor.img} alt={currentColor.name} className="w-14 h-14 rounded-md object-cover border border-border" />
+                        <p className="font-mono text-sm font-bold">COLOR: {currentColor.name}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="mb-6">
                   <div className="flex justify-between items-end mb-4">
