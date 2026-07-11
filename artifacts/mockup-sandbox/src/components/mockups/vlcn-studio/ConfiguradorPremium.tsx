@@ -17,14 +17,6 @@ const BASES = [
     img: '/__mockup/generated_images/vlcn-base-tee.jpg' 
   },
   { 
-    id: 'hoodie', 
-    name: 'TECH FLEECE HOODIE', 
-    price: 85, 
-    specs: 'Algodón/Poliéster 400 g/m²', 
-    fitLabel: 'FIT: Relaxed',
-    img: '/__mockup/generated_images/vlcn-base-hoodie.jpg' 
-  },
-  { 
     id: 'longsleeve', 
     name: 'SUBE LA FOTO DE TU DISEÑO', 
     price: 55, 
@@ -148,7 +140,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                   <p className="text-xl">Todas las bases pasan por un proceso de lavado enzimático.</p>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {BASES.map(b => (
                     <button 
                       key={b.id}
