@@ -1,0 +1,48 @@
+Este es un prompt maestro diseñado para que lo utilices con una IA generativa de código o diseño web (como v0.dev, Cursor, o un desarrollador asistido por IA). He estructurado el prompt bajo un enfoque de Arquitectura de Producto Premium, asegurando que cada línea de código y diseño esté alineado con la visión de VLCN STUDIO.
+
+Copia y pega el siguiente prompt:
+Actúa como un Arquitecto de Software y Diseñador UX/UI experto en E-commerce de alta gama.
+
+Proyecto: Desarrollar la estructura, lógica y diseño de "VLCN STUDIO", una plataforma de personalización de indumentaria enfocada en la calidad técnica y la experiencia de usuario premium.
+
+Requerimientos de Diseño:
+
+Estética: Minimalismo industrial, tipografías sans-serif de alta legibilidad, espacio negativo amplio, paleta de colores sobria con acentos (sugiero negro, blanco y un color de marca distintivo).
+
+Componente Central: El Wizard Configurador. Crea un componente de pasos lógicos (Stepped Wizard) donde la navegación sea fluida y no destructiva.
+
+Paso 1: Selección de Base (datos técnicos visibles: gramaje, composición).
+
+Paso 2: Selector de Estampado (galería de diseños con selector de ubicación: pecho, espalda, manga).
+
+Integrar un "Price Tracker" flotante (Sticky Footer/Sidebar) que calcule el costo total en tiempo real según las variables seleccionadas.
+
+Incluir botón de "Guardar Configuración" (Wishlist local).
+
+Arquitectura de Producto:
+
+Diseña la interfaz de ficha técnica tipo "dispositivo premium".
+
+Implementa un visor de imágenes con zoom de alta fidelidad.
+
+Sustituye el texto de marketing genérico por una disposición de datos técnicos (técnica de impresión, estabilidad dimensional, etc.).
+
+Implementa un selector de tallas comparativo (tabla de equivalencias con marcas retail).
+
+Incluye un distintivo visual de "Inspección Manual Post-Estampado".
+
+Sistemas de Soporte y Logística:
+
+Añade un botón flotante de WhatsApp con lógica de pre-filtrado mediante un modal: (Preguntas: ¿Uso personal/regalo?, ¿Fecha límite?, ¿Cantidad?).
+
+Diseña un "Customer Dashboard" llamado "Estado de mi Colaboración" con una línea de tiempo visual (Timeline) que muestre los 4 estados: Solicitud, Impresión, Control de Calidad, Despacho.
+
+Lógica de envíos: Integrar desglose transparente de costos con alerta de "Envío Gratis" al alcanzar el umbral de 2+ prendas.
+
+Tecnologías y Estándares:
+
+Prioriza una carga ultra rápida, diseño "Mobile First" (la mayoría vendrá de Instagram/WhatsApp), y una experiencia de usuario sin fricción (cero formularios innecesarios).
+
+Crea el layout de la sección de "Reseñas Curadas", diseñada específicamente para mostrar fotos de alta calidad del desgaste del estampado tras uso prolongado.
+
+Objetivo final: Que el sitio no se perciba como una tienda, sino como un taller de personalización técnico y profesional.
