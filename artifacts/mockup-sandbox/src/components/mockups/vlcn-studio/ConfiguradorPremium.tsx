@@ -97,12 +97,15 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
       
       {/* HEADER */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border/40 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <button
+          onClick={() => { window.location.href = '/__mockup/preview/vlcn-studio/Inicio'; }}
+          className="flex items-center gap-4 hover:opacity-70 transition-opacity"
+        >
           <div className="w-8 h-8 bg-foreground flex items-center justify-center text-background font-mono font-bold text-xs">
             VL
           </div>
           <h1 className="font-bold tracking-tighter text-xl">VLCN STUDIO</h1>
-        </div>
+        </button>
         <div className="flex items-center gap-6 text-sm font-mono">
           <span className="hidden md:inline-flex text-muted-foreground">TALLER TÉCNICO V1.0</span>
           <button className="flex items-center gap-2 hover:text-accent transition-colors relative">
