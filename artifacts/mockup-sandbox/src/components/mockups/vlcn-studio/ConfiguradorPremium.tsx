@@ -3,7 +3,7 @@ import {
   ChevronRight, ChevronLeft, ArrowRight, ArrowLeft,
   CheckCircle2, Ruler, Droplets, Info, Plus, Minus,
   MessageCircle, X, Check, Save, Share2, Package, Eye,
-  ShieldCheck, ArrowUpRight
+  ShieldCheck, ArrowUpRight, CreditCard, QrCode, MapPin
 } from 'lucide-react';
 
 // --- MOCK DATA ---
@@ -11,7 +11,7 @@ const BASES = [
   { 
     id: 'tee', 
     name: 'CAMISETA MANGA CORTA', 
-    price: 45, 
+    price: 4000, 
     specs: '100% Algodón Peinado, 220 g/m²', 
     fitLabel: 'TALLA: S, M, L, XL, XXL',
     img: '/__mockup/generated_images/vlcn-base-tee.jpg' 
@@ -19,7 +19,7 @@ const BASES = [
   { 
     id: 'longsleeve', 
     name: 'SUBE LA FOTO DE TU DISEÑO', 
-    price: 55, 
+    price: 5000, 
     specs: '100% Algodón Orgánico, 200 g/m²', 
     fitLabel: 'TALLA: ELIGE LA TALLA QUE QUIERAS',
     img: '/__mockup/generated_images/vlcn-base-longsleeve.jpg' 
@@ -32,10 +32,37 @@ const PRINTS = [
 ];
 
 const PLACEMENTS = [
-  { id: 'pecho', name: 'PECHO', price: 10 },
-  { id: 'espalda', name: 'ESPALDA', price: 15 },
-  { id: 'manga', name: 'MANGA', price: 8 }
+  { id: 'pecho', name: 'PECHO' },
+  { id: 'espalda', name: 'ESPALDA' },
+  { id: 'manga', name: 'MANGA' }
 ];
+
+const PRINT_PRICE = 6000;
+
+const COMUNAS_TEMUCO = [
+  'Centro',
+  'Pedro de Valdivia',
+  'Amanecer',
+  'Labranza',
+  'Pueblo Nuevo',
+  'Santa Rosa',
+  'Miraflores',
+  'Ñielol'
+];
+
+const SHIPPING_TIERS = [
+  { min: 1, max: 2, price: 3100 },
+  { min: 3, max: 10, price: 3650 },
+  { min: 11, max: 20, price: 4700 }
+];
+
+const formatCLP = (n: number) => new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(n);
+
+const getShippingCost = (qty: number) => {
+  const tier = SHIPPING_TIERS.find(t => qty >= t.min && qty <= t.max);
+  if (tier) return tier.price;
+  return qty > 20 ? SHIPPING_TIERS[SHIPPING_TIERS.length - 1].price : SHIPPING_TIERS[0].price;
+};
 
 const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
 
@@ -54,15 +81,28 @@ export default function ConfiguradorPremium() {
   const [waModalOpen, setWaModalOpen] = useState(false);
   const [waForm, setWaForm] = useState({ intent: '', deadline: '', qty: '' });
 
+  const [city, setCity] = useState<'temuco' | 'otra'>('temuco');
+  const [comuna, setComuna] = useState('');
+
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'tarjeta' | 'onepay'>('tarjeta');
+  const [cardNumber, setCardNumber] = useState('');
+
   // --- DERIVED STATE ---
   const base = BASES.find(b => b.id === selectedBase)!;
   const print = PRINTS.find(p => p.id === selectedPrint)!;
   const placement = PLACEMENTS.find(p => p.id === selectedPlacement)!;
   
-  const unitPrice = base.price + placement.price;
+  const unitPrice = base.price + PRINT_PRICE;
   const subtotal = unitPrice * quantity;
-  const shipping = quantity >= 2 ? 0 : 15;
+  const isOutsideTemuco = city === 'otra';
+  const shipping = isOutsideTemuco ? getShippingCost(quantity) : 0;
   const total = subtotal + shipping;
+
+  const formatCardNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 16);
+    return digits.replace(/(.{4})/g, '$1 ').trim();
+  };
 
   // --- HANDLERS ---
   const handleSaveConfig = () => {
@@ -208,7 +248,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                           className={`w-full flex items-center justify-between p-4 border transition-all ${selectedPlacement === p.id ? 'border-accent bg-accent/5' : 'border-border hover:border-foreground/50'}`}
                         >
                           <span className="font-mono text-sm">{p.name}</span>
-                          <span className="font-mono text-xs text-muted-foreground">+{p.price} USD</span>
+                          <span className="font-mono text-xs text-muted-foreground">Incluido</span>
                         </button>
                       ))}
                     </div>
@@ -379,14 +419,14 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 <p className="font-mono text-[10px] text-muted-foreground mb-1">PRENDA BASE</p>
                 <div className="flex justify-between items-start">
                   <p className="font-bold text-sm max-w-[70%]">{base.name}</p>
-                  <p className="font-mono text-sm">${base.price}</p>
+                  <p className="font-mono text-sm">{formatCLP(base.price)}</p>
                 </div>
               </div>
               <div>
-                <p className="font-mono text-[10px] text-muted-foreground mb-1">IMPRESIÓN & UBICACIÓN</p>
+                <p className="font-mono text-[10px] text-muted-foreground mb-1">IMPRESIÓN</p>
                 <div className="flex justify-between items-start">
                   <p className="font-bold text-sm max-w-[70%]">{print.name} ({placement.name})</p>
-                  <p className="font-mono text-sm">+${placement.price}</p>
+                  <p className="font-mono text-sm">+{formatCLP(PRINT_PRICE)}</p>
                 </div>
               </div>
               
@@ -400,17 +440,50 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
               </div>
             </div>
 
-            {/* Shipping logic */}
-            <div className={`p-4 border ${quantity >= 2 ? 'border-accent bg-accent/5' : 'border-border/50'} flex items-start gap-3 mt-6`}>
-              <Package className={`w-5 h-5 shrink-0 ${quantity >= 2 ? 'text-accent' : 'text-muted-foreground'}`} />
-              <div>
-                <h4 className="font-bold text-xs uppercase tracking-tight">Logística</h4>
-                {quantity >= 2 ? (
-                  <p className="text-xs text-accent font-bold mt-1">Envío Nacional Gratuito Desbloqueado.</p>
-                ) : (
-                  <p className="text-[10px] text-muted-foreground mt-1">Costo estándar $15. Agrega 1 prenda más para envío gratis.</p>
-                )}
-              </div>
+            {/* Ubicación y Envío */}
+            <div className="pt-4 border-t border-border space-y-3 mt-6">
+              <p className="font-mono text-[10px] text-muted-foreground mb-1 flex items-center gap-2">
+                <MapPin className="w-3 h-3" /> UBICACIÓN Y ENVÍO
+              </p>
+
+              <select
+                className="w-full p-3 border border-border bg-transparent focus:outline-none focus:border-accent font-mono text-xs"
+                value={city}
+                onChange={e => { setCity(e.target.value as 'temuco' | 'otra'); setComuna(''); }}
+              >
+                <option value="temuco">TEMUCO</option>
+                <option value="otra">OTRA CIUDAD (Región de La Araucanía)</option>
+              </select>
+
+              {city === 'temuco' && (
+                <select
+                  className="w-full p-3 border border-border bg-transparent focus:outline-none focus:border-accent font-mono text-xs"
+                  value={comuna}
+                  onChange={e => setComuna(e.target.value)}
+                >
+                  <option value="">SELECCIONA TU SECTOR</option>
+                  {COMUNAS_TEMUCO.map(c => (
+                    <option key={c} value={c}>{c.toUpperCase()}</option>
+                  ))}
+                </select>
+              )}
+
+              {isOutsideTemuco ? (
+                <div className="p-4 bg-muted border border-border/50 space-y-2">
+                  <h4 className="font-bold text-xs uppercase tracking-tight">Costos de Envío Región de La Araucanía vía Blue Express</h4>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">El valor del despacho se calcula según la cantidad de poleras en tu pedido:</p>
+                  <ul className="text-[10px] font-mono space-y-1 pt-1">
+                    <li className={quantity >= 1 && quantity <= 2 ? 'text-accent font-bold' : 'text-muted-foreground'}>1 a 2 poleras: {formatCLP(3100)}</li>
+                    <li className={quantity >= 3 && quantity <= 10 ? 'text-accent font-bold' : 'text-muted-foreground'}>3 a 10 poleras: {formatCLP(3650)}</li>
+                    <li className={quantity >= 11 && quantity <= 20 ? 'text-accent font-bold' : 'text-muted-foreground'}>11 a 20 poleras: {formatCLP(4700)}</li>
+                  </ul>
+                </div>
+              ) : (
+                <div className="p-4 border border-accent/40 bg-accent/5 flex items-start gap-3">
+                  <Package className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                  <p className="text-[10px] text-muted-foreground">Retiro o despacho local gratuito dentro de Temuco.</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -419,10 +492,10 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
             <div className="flex-1 lg:flex-none">
               <p className="font-mono text-[10px] text-muted-foreground hidden lg:block mb-1">TOTAL ESTIMADO</p>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold tracking-tighter">${total}</span>
-                <span className="font-mono text-xs text-muted-foreground">USD</span>
+                <span className="text-3xl font-bold tracking-tighter">{formatCLP(total)}</span>
+                <span className="font-mono text-xs text-muted-foreground">CLP</span>
               </div>
-              <p className="text-[10px] text-muted-foreground lg:hidden">Base + Print {quantity >= 2 ? '+ Envío Gratis' : '+ Envío'}</p>
+              <p className="text-[10px] text-muted-foreground lg:hidden">Base + Impresión {isOutsideTemuco ? `+ Envío ${formatCLP(shipping)}` : '+ Envío gratis (Temuco)'}</p>
             </div>
             
             <div className="flex gap-2 flex-col lg:flex-row lg:w-full w-auto">
@@ -433,7 +506,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
               >
                 <Save className="w-5 h-5" />
               </button>
-              <button className="bg-foreground text-background font-mono text-sm h-12 lg:h-14 px-6 flex-1 flex items-center justify-center gap-2 hover:bg-accent transition-colors group">
+              <button onClick={() => setCheckoutOpen(true)} className="bg-foreground text-background font-mono text-sm h-12 lg:h-14 px-6 flex-1 flex items-center justify-center gap-2 hover:bg-accent transition-colors group">
                 <span className="hidden sm:inline">INICIAR PEDIDO</span>
                 <span className="sm:hidden">PEDIR</span>
                 <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -524,6 +597,128 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 Conectar vía WhatsApp <ArrowRight className="w-4 h-4" />
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* WEBPAY CHECKOUT MODAL */}
+      {checkoutOpen && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 font-sans">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setCheckoutOpen(false)}></div>
+
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Security band */}
+            <div className="h-2 w-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-teal-400"></div>
+
+            {/* Header */}
+            <div className="px-6 sm:px-8 pt-6 pb-4 flex items-center justify-between border-b border-slate-100">
+              <div className="leading-none">
+                <p className="text-2xl font-black tracking-tight lowercase italic text-purple-800">webpay<span className="text-teal-500">.</span></p>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-slate-400 mt-0.5">Transbank · Pago Seguro</p>
+              </div>
+              <button onClick={() => setCheckoutOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="px-6 sm:px-8 py-6 space-y-6">
+              {/* Resumen */}
+              <div>
+                <p className="text-xs text-slate-500">Estás pagando en:</p>
+                <p className="font-bold text-slate-900 tracking-tight">VLCN STUDIO</p>
+                <div className="mt-4 flex items-baseline justify-between border-t border-slate-100 pt-4">
+                  <span className="text-xs font-mono uppercase text-slate-500">Monto Total</span>
+                  <span className="text-3xl font-black text-slate-900 tracking-tighter">{formatCLP(total)}</span>
+                </div>
+              </div>
+
+              {/* Selector de medios */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setPaymentMethod('tarjeta')}
+                  className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-colors ${paymentMethod === 'tarjeta' ? 'border-purple-700 bg-purple-50' : 'border-slate-200 hover:border-slate-300'}`}
+                >
+                  <CreditCard className={`w-6 h-6 ${paymentMethod === 'tarjeta' ? 'text-purple-700' : 'text-slate-500'}`} />
+                  <span className="text-xs font-bold text-slate-700 text-center leading-tight">Tarjetas<br /><span className="font-normal text-[10px] text-slate-400">Crédito, Débito, Prepago</span></span>
+                </button>
+                <button
+                  onClick={() => setPaymentMethod('onepay')}
+                  className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-colors ${paymentMethod === 'onepay' ? 'border-purple-700 bg-purple-50' : 'border-slate-200 hover:border-slate-300'}`}
+                >
+                  <QrCode className={`w-6 h-6 ${paymentMethod === 'onepay' ? 'text-purple-700' : 'text-slate-500'}`} />
+                  <span className="text-xs font-bold text-slate-700 text-center leading-tight">OnePay<br /><span className="font-normal text-[10px] text-slate-400">Billeteras Digitales</span></span>
+                </button>
+              </div>
+
+              {/* Formulario de pago */}
+              {paymentMethod === 'tarjeta' ? (
+                <div className="space-y-3">
+                  <div className="rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 text-white p-5 relative overflow-hidden">
+                    <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-fuchsia-500/20"></div>
+                    <div className="absolute -right-2 top-10 w-16 h-16 rounded-full bg-teal-400/20"></div>
+                    <div className="w-9 h-7 rounded bg-gradient-to-br from-yellow-300 to-yellow-500 mb-6"></div>
+                    <p className="font-mono text-lg tracking-widest">
+                      {cardNumber ? formatCardNumber(cardNumber) : 'XXXX XXXX XXXX XXXX'}
+                    </p>
+                    <div className="flex justify-between mt-4 text-[10px] font-mono text-slate-300 uppercase">
+                      <span>Titular de la tarjeta</span>
+                      <span>MM/AA</span>
+                    </div>
+                  </div>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="Número de tarjeta"
+                    value={formatCardNumber(cardNumber)}
+                    onChange={e => setCardNumber(e.target.value)}
+                    className="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:border-purple-600 font-mono text-sm tracking-widest"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <input type="text" placeholder="MM/AA" className="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:border-purple-600 font-mono text-sm" />
+                    <input type="text" placeholder="CVV" className="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:border-purple-600 font-mono text-sm" />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3 py-4 rounded-xl border border-dashed border-slate-200 bg-slate-50">
+                  <div className="w-32 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
+                    <QrCode className="w-20 h-20 text-slate-800" />
+                  </div>
+                  <p className="text-xs text-slate-500 text-center px-6">Escanea el código QR con tu app OnePay o billetera digital para completar el pago.</p>
+                </div>
+              )}
+
+              {/* CTA */}
+              <button
+                onClick={() => setCheckoutOpen(false)}
+                className="w-full bg-purple-900 hover:bg-purple-950 text-white font-bold text-sm py-4 rounded-xl transition-colors tracking-wide"
+              >
+                Continuar
+              </button>
+
+              {/* Footer de seguridad */}
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                {[
+                  { label: 'VISA', cls: 'text-blue-700' },
+                  { label: 'Mastercard', cls: 'text-orange-600' },
+                  { label: 'AMEX', cls: 'text-sky-700' },
+                  { label: 'Diners Club', cls: 'text-slate-600' },
+                  { label: 'Magna', cls: 'text-slate-900' },
+                  { label: 'RedCompra', cls: 'text-emerald-700' },
+                ].map(card => (
+                  <span key={card.label} className={`text-[9px] font-black uppercase tracking-tight border border-slate-200 rounded px-2 py-1 ${card.cls}`}>
+                    {card.label}
+                  </span>
+                ))}
+              </div>
+
+              {/* Link de salida */}
+              <button
+                onClick={() => { window.location.href = '/__mockup/preview/vlcn-studio/Inicio'; }}
+                className="w-full text-center text-xs text-slate-400 hover:text-slate-600 underline underline-offset-2"
+              >
+                Anular compra y volver a VLCN STUDIO
+              </button>
+            </div>
           </div>
         </div>
       )}
