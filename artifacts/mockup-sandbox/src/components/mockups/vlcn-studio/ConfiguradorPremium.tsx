@@ -27,9 +27,13 @@ const BASES = [
 ];
 
 const COLORS = [
-  { id: 'negro', name: 'NEGRO', img: `generated_images/vlcn-base-tee-color1.png` },
-  { id: 'blanco', name: 'BLANCO', img: `generated_images/vlcn-base-tee-color2.png` },
-  { id: 'multicolor', name: 'COLOR', img: `generated_images/vlcn-base-tee-color3.png` }
+  { id: 'rojo', name: 'ROJO', hex: '#DC2626', img: `generated_images/vlcn-base-tee-rojo.png` },
+  { id: 'naranjo', name: 'NARANJO', hex: '#F97316', img: `generated_images/vlcn-base-tee-naranjo.png` },
+  { id: 'amarillo', name: 'AMARILLO', hex: '#EAB308', img: `generated_images/vlcn-base-tee-amarillo.png` },
+  { id: 'verde', name: 'VERDE', hex: '#16A34A', img: `generated_images/vlcn-base-tee-verde.png` },
+  { id: 'azul', name: 'AZUL', hex: '#2563EB', img: `generated_images/vlcn-base-tee-azul.png` },
+  { id: 'violeta', name: 'VIOLETA', hex: '#7C3AED', img: `generated_images/vlcn-base-tee-violeta.png` },
+  { id: 'blanco', name: 'BLANCO', hex: '#FFFFFF', img: `generated_images/vlcn-base-tee-color2.png` },
 ];
 
 const PRINTS = [
@@ -128,7 +132,8 @@ export default function ConfiguradorPremium() {
 
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
-  const [selectedColor, setSelectedColor] = useState(COLORS[1].id); // blanco
+  const [selectedColor, setSelectedColor] = useState('blanco');
+  const [hoveredColor, setHoveredColor] = useState<string | null>(null);
 
   const [uploadedDesign, setUploadedDesign] = useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -147,9 +152,9 @@ export default function ConfiguradorPremium() {
   const placement = PLACEMENTS.find(p => p.id === selectedPlacement)!;
   const colorIndex = COLORS.findIndex(c => c.id === selectedColor);
   const currentColor = COLORS[colorIndex];
+  const previewColor = COLORS.find(c => c.id === hoveredColor) || currentColor;
   const nextColor = () => setSelectedColor(COLORS[(colorIndex + 1) % COLORS.length].id);
-  const viewerImg = (selectedBase === 'tee' || uploadedDesign) ? currentColor.img : base.img;
-  const printOverlayImg = uploadedDesign || print.img;
+  const viewerImg = (selectedBase === 'tee' || uploadedDesign) ? previewColor.img : base.img;
   // El estampado de un diseño propio subido por el cliente siempre sigue la Tabla de Escalamiento
   // completa (S 25×35 … 2XL 33×43), sin excepción de tamaño fijo. La excepción de logo fijo
   // (10×10cm) sólo aplica al placement "pecho" cuando se usa un gráfico de catálogo pequeño.
@@ -271,7 +276,11 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                             </button>
                             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                               {COLORS.map(c => (
-                                <span key={c.id} className={`w-1.5 h-1.5 rounded-full transition-colors ${c.id === selectedColor ? 'bg-white' : 'bg-white/40'}`} />
+                                <span
+                                  key={c.id}
+                                  className={`w-1.5 h-1.5 rounded-full transition-all border border-white/70 ${c.id === selectedColor ? 'ring-1 ring-white scale-125' : 'opacity-70'}`}
+                                  style={{ backgroundColor: c.hex === '#FFFFFF' ? '#f3f4f6' : c.hex }}
+                                />
                               ))}
                             </div>
                           </>
@@ -396,18 +405,9 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 </div>
                 <img 
                   src={viewerImg} 
-                  alt="Vista Detallada" 
+                  alt={`Vista Detallada - ${previewColor.name}`} 
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.35] origin-center"
                 />
-                {/* Simulated overlay for print preview */}
-                <div className={`absolute inset-0 flex items-center justify-center pointer-events-none ${uploadedDesign ? '' : 'mix-blend-multiply opacity-80'}`}>
-                   <img src={printOverlayImg} className="h-auto transition-[width,transform] duration-1000 group-hover:scale-[1.35] origin-center" style={{
-                     width: `${printWidthPercent}%`,
-                     transform: selectedPlacement === 'pecho' ?
-                                  (isPechoLogoFijo ? 'translateY(-20%)' : 'translateY(-15%)') :
-                                selectedPlacement === 'espalda' ? 'none' : 'translateX(-30%) translateY(-10%)'
-                   }} />
-                </div>
               </div>
 
               {/* Technical Specs & Sizing */}
@@ -418,7 +418,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                   <div className="flex gap-4 items-start border-b border-border/50 pb-4">
                     <Droplets className="w-5 h-5 text-muted-foreground shrink-0" />
                     <div>
-                      <h4 className="font-mono text-xs font-bold mb-1">TÉCNICA DE IMPRESIÓN</h4>
+                      <h4 className="font-mono text-xs font-bold mb-1">ESTAMPADO PERSONALIZADO</h4>
                       <p className="text-sm">Serigrafía Alta Densidad / DTF Industrial. Estabilidad dimensional garantizada &lt;3% de encogimiento tras 50 lavados.</p>
                     </div>
                   </div>
@@ -440,15 +440,20 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                           <button
                             key={c.id}
                             onClick={() => setSelectedColor(c.id)}
-                            className={`w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${selectedColor === c.id ? 'border-accent ring-2 ring-accent/30' : 'border-border hover:border-foreground/40'}`}
+                            onMouseEnter={() => setHoveredColor(c.id)}
+                            onMouseLeave={() => setHoveredColor(null)}
+                            className={`w-12 h-12 rounded-full border-2 transition-all shadow-sm ${selectedColor === c.id ? 'border-accent ring-2 ring-accent/30 scale-110' : 'border-border hover:border-foreground/60 hover:scale-105'}`}
+                            style={{ backgroundColor: c.hex }}
                             title={c.name}
-                          >
-                            <img src={c.img} alt={c.name} className="w-full h-full object-cover" />
-                          </button>
+                            aria-label={c.name}
+                          />
                         ))}
                       </div>
                       <div className="flex items-center gap-3 border-l border-border/60 pl-4">
-                        <img src={currentColor.img} alt={currentColor.name} className="w-14 h-14 rounded-md object-cover border border-border" />
+                        <span
+                          className="w-12 h-12 rounded-full border border-border/60 shadow-sm"
+                          style={{ backgroundColor: currentColor.hex }}
+                        />
                         <p className="font-mono text-sm font-bold">COLOR: {currentColor.name}</p>
                       </div>
                     </div>

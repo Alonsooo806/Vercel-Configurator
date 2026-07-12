@@ -1,0 +1,1 @@
+- [Color mockups for product configurator](color-mockups.md) — generate masked static color variants instead of relying on CSS blend modes to tint a non-transparent base image.
