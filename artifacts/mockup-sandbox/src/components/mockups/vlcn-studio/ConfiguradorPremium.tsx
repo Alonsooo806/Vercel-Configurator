@@ -3,7 +3,7 @@ import {
   ChevronRight, ChevronLeft, ArrowRight, ArrowLeft,
   CheckCircle2, Ruler, Droplets, Info, Plus, Minus,
   MessageCircle, X, Check, Save, Share2, Package, Eye,
-  ShieldCheck, ArrowUpRight, MapPin
+  ShieldCheck, ArrowUpRight, MapPin, Upload
 } from 'lucide-react';
 
 // --- MOCK DATA ---
@@ -93,6 +93,17 @@ export default function ConfiguradorPremium() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const [selectedColor, setSelectedColor] = useState(COLORS[1].id); // blanco
+
+  const [uploadedDesign, setUploadedDesign] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleDesignUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!['image/png', 'image/jpeg'].includes(file.type)) return;
+    const url = URL.createObjectURL(file);
+    setUploadedDesign(url);
+  };
 
   // --- DERIVED STATE ---
   const base = BASES.find(b => b.id === selectedBase)!;
@@ -212,7 +223,35 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                             </div>
                           </>
                         ) : (
-                          <img src={b.img} alt={b.name} className={`w-full h-full object-cover transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
+                          <>
+                            {uploadedDesign ? (
+                              <img src={uploadedDesign} alt="Diseño subido" className="w-full h-full object-contain bg-white" />
+                            ) : (
+                              <img src={b.img} alt={b.name} className={`w-full h-full object-cover opacity-40 transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
+                            )}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                                className="flex flex-col items-center gap-2 bg-white/90 hover:bg-white text-foreground rounded-full w-20 h-20 justify-center shadow-lg transition-transform hover:scale-110"
+                                aria-label="Subir diseño desde galería o computador"
+                              >
+                                <Upload className="w-7 h-7" />
+                              </button>
+                            </div>
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              accept="image/png,image/jpeg"
+                              onChange={handleDesignUpload}
+                              onClick={(e) => e.stopPropagation()}
+                              className="hidden"
+                            />
+                            {uploadedDesign && (
+                              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-[10px] font-mono px-2 py-1 rounded">
+                                DISEÑO CARGADO
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                       <h4 className="font-bold tracking-tight mb-2">{b.name}</h4>
