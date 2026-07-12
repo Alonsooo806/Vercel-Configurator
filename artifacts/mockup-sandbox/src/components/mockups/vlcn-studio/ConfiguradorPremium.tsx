@@ -135,8 +135,12 @@ export default function ConfiguradorPremium() {
   const nextColor = () => setSelectedColor(COLORS[(colorIndex + 1) % COLORS.length].id);
   const viewerImg = (selectedBase === 'tee' || uploadedDesign) ? currentColor.img : base.img;
   const printOverlayImg = uploadedDesign || print.img;
-  const printMeasure = selectedPlacement === 'pecho' ? LOGO_PECHO_SIZE : PRINT_SIZE_BY_TALLA[size];
-  const printScale = selectedPlacement === 'pecho' ? { x: 1, y: 1 } : getPrintScale(size);
+  // El estampado de un diseño propio subido por el cliente siempre sigue la Tabla de Escalamiento
+  // completa (S 25×35 … 2XL 33×43), sin excepción de tamaño fijo. La excepción de logo fijo
+  // (10×10cm) sólo aplica al placement "pecho" cuando se usa un gráfico de catálogo pequeño.
+  const isPechoLogoFijo = selectedPlacement === 'pecho' && !uploadedDesign;
+  const printMeasure = isPechoLogoFijo ? LOGO_PECHO_SIZE : PRINT_SIZE_BY_TALLA[size];
+  const printScale = isPechoLogoFijo ? { x: 1, y: 1 } : getPrintScale(size);
   
   const unitPrice = base.price + PRINT_PRICE;
   const subtotal = unitPrice * quantity;
@@ -373,7 +377,8 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 {/* Simulated overlay for print preview */}
                 <div className={`absolute inset-0 flex items-center justify-center pointer-events-none ${uploadedDesign ? '' : 'mix-blend-multiply opacity-80'}`}>
                    <img src={printOverlayImg} className="w-1/3 transition-transform duration-1000 group-hover:scale-[1.35] origin-center" style={{
-                     transform: selectedPlacement === 'pecho' ? 'translateY(-20%) scale(0.6)' : 
+                     transform: selectedPlacement === 'pecho' ? 
+                                  (isPechoLogoFijo ? 'translateY(-20%) scale(0.6)' : `translateY(-15%) scale(${0.6 * printScale.x}, ${0.6 * printScale.y})`) : 
                                 selectedPlacement === 'espalda' ? `scale(${printScale.x}, ${printScale.y})` : `translateX(-30%) translateY(-10%) scale(${0.4 * printScale.x}, ${0.4 * printScale.y})`
                    }} />
                 </div>
@@ -445,7 +450,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                   <div className="mt-3 flex items-center gap-2 text-xs font-mono text-muted-foreground">
                     <Ruler className="w-3.5 h-3.5 shrink-0" />
                     <span>
-                      TALLA {size} — MEDIDA DEL ESTAMPADO{selectedPlacement === 'pecho' ? ' (pecho)' : ''}: <span className="font-bold text-foreground">{printMeasure}</span>
+                      TALLA {size} — MEDIDA DEL ESTAMPADO{isPechoLogoFijo ? ' (pecho)' : ''}: <span className="font-bold text-foreground">{printMeasure}</span>
                     </span>
                   </div>
                   <div className="mt-2 font-mono text-[10px] text-muted-foreground/80 leading-relaxed">
