@@ -48,3 +48,9 @@ id = "xVR0NngjRMEJJQvCvMisT"
 uri = "file://screenshots/vlcn-configurador-v2.jpg"
 type = "image"
 title = "VLCN Configurador V2 - Preview"
+
+[[outputs]]
+id = "QJ6LhxBYFigf-u8VnZiPs"
+uri = "file://screenshots/vlcn-configurador-v3.jpg"
+type = "image"
+title = "VLCN Configurador V3 - Preview"

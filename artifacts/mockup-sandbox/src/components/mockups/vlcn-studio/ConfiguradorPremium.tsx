@@ -27,14 +27,14 @@ const BASES = [
 ];
 
 const COLORS = [
-  { id: 'negro', name: 'NEGRO', hex: '#000000', img: `generated_images/vlcn-shirt-negro.png` },
-  { id: 'blanco', name: 'BLANCO', hex: '#FFFFFF', img: `generated_images/vlcn-shirt-blanco.png` },
-  { id: 'rojo', name: 'ROJO', hex: '#DC2626', img: `generated_images/vlcn-shirt-rojo.png` },
-  { id: 'naranjo', name: 'NARANJO', hex: '#F97316', img: `generated_images/vlcn-shirt-naranjo.png` },
-  { id: 'amarillo', name: 'AMARILLO', hex: '#EAB308', img: `generated_images/vlcn-shirt-amarillo.png` },
-  { id: 'verde', name: 'VERDE', hex: '#16A34A', img: `generated_images/vlcn-shirt-verde.png` },
-  { id: 'azul', name: 'AZUL', hex: '#2563EB', img: `generated_images/vlcn-shirt-azul.png` },
-  { id: 'violeta', name: 'VIOLETA', hex: '#7C3AED', img: `generated_images/vlcn-shirt-violeta.png` },
+  { id: 'negro', name: 'NEGRO', hex: '#000000', img: `generated_images/vlcn-shirt-negro-white.png` },
+  { id: 'blanco', name: 'BLANCO', hex: '#FFFFFF', img: `generated_images/vlcn-shirt-blanco-white.png` },
+  { id: 'rojo', name: 'ROJO', hex: '#DC2626', img: `generated_images/vlcn-shirt-rojo-white.png` },
+  { id: 'naranjo', name: 'NARANJO', hex: '#F97316', img: `generated_images/vlcn-shirt-naranjo-white.png` },
+  { id: 'amarillo', name: 'AMARILLO', hex: '#EAB308', img: `generated_images/vlcn-shirt-amarillo-white.png` },
+  { id: 'verde', name: 'VERDE', hex: '#16A34A', img: `generated_images/vlcn-shirt-verde-white.png` },
+  { id: 'azul', name: 'AZUL', hex: '#2563EB', img: `generated_images/vlcn-shirt-azul-white.png` },
+  { id: 'violeta', name: 'VIOLETA', hex: '#7C3AED', img: `generated_images/vlcn-shirt-violeta-white.png` },
 ];
 
 const PRINTS = [
@@ -135,6 +135,7 @@ export default function ConfiguradorPremium() {
 
   const [selectedColor, setSelectedColor] = useState('blanco');
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
+  const [showColorConfig, setShowColorConfig] = useState(false);
 
   const [uploadedDesign, setUploadedDesign] = useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -231,119 +232,380 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
         <span className="font-mono text-xs">CONFIGURACIÓN GUARDADA</span>
       </div>
 
-      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row items-stretch relative">
-        {/* MAIN VIEWER AREA */}
-        <main className="w-full lg:w-[65%] min-h-screen">
+      <div className="max-w-[1600px] mx-auto flex flex-col lg:flex-row items-start relative">
+        
+        {/* LEFT COLUMN: MAIN CONTENT */}
+        <main className="w-full lg:w-[70%] lg:border-r border-border/40 min-h-screen">
           
-          {/* MAIN VIEWER: concrete background with centered t-shirt */}
-          <section className="relative flex-1 flex items-center justify-center min-h-[60vh] lg:min-h-[calc(100vh-73px)] overflow-hidden" style={{ backgroundColor: '#6E6F6A' }}>
-            <div className="relative w-full max-w-2xl aspect-square p-8 lg:p-12">
-              <img 
-                src={viewerImg} 
-                alt={`Camiseta - ${previewColor.name}`} 
-                className="w-full h-full object-contain drop-shadow-2xl transition-all duration-300 ease-out"
-              />
+          {/* WIZARD SECTION */}
+          <section className="p-6 md:p-12 border-b border-border/40">
+            <div className="flex items-center justify-between mb-12">
+              <h2 className="text-4xl font-bold tracking-tighter uppercase">Configurador</h2>
+              <div className="flex items-center gap-2 font-mono text-sm">
+                <span className={step === 1 ? 'text-accent font-bold' : 'text-muted-foreground'}>01. BASE</span>
+                <span className="text-muted-foreground">/</span>
+                <span className={step === 2 ? 'text-accent font-bold' : 'text-muted-foreground'}>02. PRINT</span>
+              </div>
+            </div>
+
+            {/* STEP 1: BASE SELECTION */}
+            {step === 1 && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="mb-6">
+                  <h3 className="font-mono text-sm text-muted-foreground mb-1">SELECCIONA EL LIENZO</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {BASES.map(b => (
+                    <div 
+                      key={b.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => { setSelectedBase(b.id); setShowColorConfig(b.id === 'tee'); }}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { setSelectedBase(b.id); setShowColorConfig(b.id === 'tee'); } }}
+                      className={`group text-left relative border p-4 transition-all duration-300 cursor-pointer ${selectedBase === b.id ? 'border-accent ring-1 ring-accent' : 'border-border hover:border-foreground/50'}`}
+                    >
+                      <div className="aspect-square bg-muted mb-4 overflow-hidden relative">
+                        {b.id === 'tee' ? (
+                          <>
+                            <img src={currentColor.img} alt={`${b.name} - ${currentColor.name}`} className={`w-full h-full object-cover transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
+                            <button
+                              onClick={(e) => { e.stopPropagation(); nextColor(); }}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-foreground rounded-full p-2 shadow-lg transition-transform hover:scale-110"
+                              aria-label="Ver siguiente color"
+                            >
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                              {COLORS.map(c => (
+                                <span
+                                  key={c.id}
+                                  className={`w-1.5 h-1.5 rounded-full transition-all border border-white/70 ${c.id === selectedColor ? 'ring-1 ring-white scale-125' : 'opacity-70'}`}
+                                  style={{ backgroundColor: c.hex === '#FFFFFF' ? '#f3f4f6' : c.hex }}
+                                />
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            {uploadedDesign ? (
+                              <img src={uploadedDesign} alt="Diseño subido" className="w-full h-full object-contain bg-white" />
+                            ) : (
+                              <img src={b.img} alt={b.name} className={`w-full h-full object-cover opacity-40 transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
+                            )}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                                className="flex flex-col items-center gap-2 bg-white/90 hover:bg-white text-foreground rounded-full w-20 h-20 justify-center shadow-lg transition-transform hover:scale-110"
+                                aria-label="Subir diseño desde galería o computador"
+                              >
+                                <Upload className="w-7 h-7" />
+                              </button>
+                            </div>
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              accept="image/png,image/jpeg"
+                              onChange={handleDesignUpload}
+                              onClick={(e) => e.stopPropagation()}
+                              className="hidden"
+                            />
+                            {uploadedDesign && (
+                              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-[10px] font-mono px-2 py-1 rounded">
+                                DISEÑO CARGADO
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      <h4 className="font-bold tracking-tight mb-2">{b.name}</h4>
+                      <div className="font-mono text-xs text-muted-foreground space-y-1">
+                        <p>{b.specs}</p>
+                        <p>{b.fitLabel}</p>
+                        {b.id === 'tee' && <p>COLOR: {currentColor.name}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-12 flex justify-end">
+                  <button 
+                    onClick={() => setStep(2)}
+                    className="bg-foreground text-background px-8 py-4 flex items-center gap-3 hover:bg-accent hover:text-white transition-colors group font-mono text-sm"
+                  >
+                    SIGUIENTE PASO <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* STEP 2: PRINT & PLACEMENT */}
+            {step === 2 && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                <button onClick={() => setStep(1)} className="flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-foreground mb-8 transition-colors">
+                  <ArrowLeft className="w-3 h-3" /> VOLVER A BASE
+                </button>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  {/* Print Selector */}
+                  <div>
+                    <h3 className="font-mono text-sm text-muted-foreground mb-4">SELECCIONA EL GRÁFICO</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      {PRINTS.map(p => (
+                        <button 
+                          key={p.id}
+                          onClick={() => setSelectedPrint(p.id)}
+                          className={`group text-left border p-2 transition-all ${selectedPrint === p.id ? 'border-accent' : 'border-border'}`}
+                        >
+                          <div className="aspect-[3/4] bg-muted mb-2 overflow-hidden">
+                            <img src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                          </div>
+                          <h4 className="font-mono text-[10px] leading-tight font-bold">{p.name}</h4>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Placement Selector */}
+                  <div>
+                    <h3 className="font-mono text-sm text-muted-foreground mb-4">UBICACIÓN TÉCNICA</h3>
+                    <div className="space-y-3">
+                      {PLACEMENTS.map(p => (
+                        <button 
+                          key={p.id}
+                          onClick={() => setSelectedPlacement(p.id)}
+                          className={`w-full flex items-center justify-between p-4 border transition-all ${selectedPlacement === p.id ? 'border-accent bg-accent/5' : 'border-border hover:border-foreground/50'}`}
+                        >
+                          <span className="font-mono text-sm">{p.name}</span>
+                          <span className="font-mono text-xs text-muted-foreground">Incluido</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="mt-8 p-6 bg-muted border border-border/50">
+                      <div className="flex items-start gap-4">
+                        <Info className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-bold text-sm mb-1 uppercase tracking-tight">Inspección Manual</h4>
+                          <p className="text-xs text-muted-foreground leading-relaxed">Cada impresión es curada térmicamente a 160°C y revisada bajo luz industrial para garantizar adherencia y fidelidad de color antes del empaque.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+
+          {showColorConfig && (
+          <section className="p-6 md:p-12 border-b border-border/40 bg-[#FAFAFA]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              {/* High Fidelity Viewer */}
+              <div className="relative group overflow-hidden border border-border aspect-[4/5] bg-white cursor-crosshair">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                  <div className="bg-background/80 backdrop-blur font-mono text-[10px] px-3 py-1 border border-border">INSPECCIÓN X-RAY</div>
+                </div>
+                <img 
+                  src={viewerImg} 
+                  alt={`Vista Detallada - ${previewColor.name}`} 
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.35] origin-center"
+                />
+              </div>
+
+              {/* Technical Specs & Sizing */}
+              <div>
+                <h2 className="text-3xl font-bold tracking-tighter uppercase mb-8">Especificaciones</h2>
+                
+                <div className="space-y-6 mb-10">
+                  <div className="flex gap-4 items-start border-b border-border/50 pb-4">
+                    <Droplets className="w-5 h-5 text-muted-foreground shrink-0" />
+                    <div>
+                      <h4 className="font-mono text-xs font-bold mb-1">ESTAMPADO PERSONALIZADO</h4>
+                      <p className="text-sm">Serigrafía Alta Densidad / DTF Industrial. Estabilidad dimensional garantizada &lt;3% de encogimiento tras 50 lavados.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 items-start border-b border-border/50 pb-4">
+                    <ShieldCheck className="w-5 h-5 text-muted-foreground shrink-0" />
+                    <div>
+                      <h4 className="font-mono text-xs font-bold mb-1">RESISTENCIA</h4>
+                      <p className="text-sm">Curado a 160°C. Resiste fricción mecánica y lavados abrasivos sin craquelado prematuro.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {(selectedBase === 'tee' || uploadedDesign) && (
+                  <div className="mb-10">
+                    <h4 className="font-mono text-xs font-bold mb-4">ELIGE TU COLOR:</h4>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div className="flex gap-3">
+                        {COLORS.map(c => (
+                          <button
+                            key={c.id}
+                            onClick={() => setSelectedColor(c.id)}
+                            onMouseEnter={() => setHoveredColor(c.id)}
+                            onMouseLeave={() => setHoveredColor(null)}
+                            className={`w-12 h-12 rounded-full border-2 transition-all shadow-sm ${selectedColor === c.id ? 'border-accent ring-2 ring-accent/30 scale-110' : 'border-border hover:border-foreground/60 hover:scale-105'}`}
+                            style={{ backgroundColor: c.hex }}
+                            title={c.name}
+                            aria-label={c.name}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-3 border-l border-border/60 pl-4">
+                        <span
+                          className="w-12 h-12 rounded-full border border-border/60 shadow-sm"
+                          style={{ backgroundColor: currentColor.hex }}
+                        />
+                        <p className="font-mono text-sm font-bold">COLOR: {currentColor.name}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="mb-6">
+                  <div className="flex justify-between items-end mb-4">
+                    <h4 className="font-mono text-xs font-bold">SELECCIÓN DE TALLA (EU)</h4>
+                    <button className="flex items-center gap-1 font-mono text-[10px] text-accent hover:underline">
+                      <Ruler className="w-3 h-3" /> VER TABLA COMPARATIVA
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    {SIZES.map(s => (
+                      <button 
+                        key={s}
+                        onClick={() => setSize(s)}
+                        className={`flex-1 py-3 font-mono text-sm border transition-colors ${size === s ? 'bg-foreground text-background border-foreground' : 'bg-background hover:border-foreground/40'}`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex items-center gap-2 text-xs font-mono text-muted-foreground">
+                    <Ruler className="w-3.5 h-3.5 shrink-0" />
+                    <span>
+                      TALLA {size} — MEDIDA DEL ESTAMPADO{isPechoLogoFijo ? ' (pecho)' : ''}: <span className="font-bold text-foreground">{printMeasure}</span>
+                    </span>
+                  </div>
+                  <div className="mt-2 font-mono text-[10px] text-muted-foreground/80 leading-relaxed">
+                    Talla S: 25 × 35 cm (prenda 50cm) · Talla M: 27 × 37 cm (52cm) · Talla L: 29 × 39 cm (54cm) · Talla XL: 31 × 41 cm (57cm) · Talla 2XL: 33 × 43 cm (60cm) · Logotipos (pecho): 10 × 10 cm
+                  </div>
+                  <div className="mt-1 font-mono text-[10px] text-muted-foreground/60 leading-relaxed">
+                    El estampado ocupa ~{printWidthRatioPct.toFixed(0)}% del ancho de la prenda en talla {size} — proporción constante en todas las tallas, con margen libre a cada costura.
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </section>
+          )}
+
+          {/* ESTADO DE MI COLABORACIÓN (CUSTOMER DASHBOARD) */}
+          <section className="p-6 md:p-12 border-b border-border/40">
+            <h2 className="text-3xl font-bold tracking-tighter uppercase mb-2">Flujo de Producción</h2>
+            <p className="text-muted-foreground mb-12">Monitoreo transparente de tu encargo en nuestro taller.</p>
+            
+            <div className="relative">
+              {/* Line connector */}
+              <div className="absolute left-[15px] md:left-[50%] top-0 bottom-0 w-px bg-border/50 md:-translate-x-1/2"></div>
+              
+              <div className="space-y-8 relative">
+                {[
+                  { state: 'Solicitud Recibida', desc: 'Confirmación de especificaciones y pago.', date: 'HOY', active: true, done: true },
+                  { state: 'Impresión & Curado', desc: 'Ejecución en taller. Espera en fila de producción.', date: 'ESTIMADO: +2 DÍAS', active: true, done: false },
+                  { state: 'Control de Calidad', desc: 'Inspección lumínica y estrés térmico.', date: 'PENDIENTE', active: false, done: false },
+                  { state: 'Despacho CERRADO', desc: 'Generación de tracking y empaque sellado.', date: 'PENDIENTE', active: false, done: false },
+                ].map((s, i) => (
+                  <div key={i} className={`relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-12 w-full ${!s.active && 'opacity-50 grayscale'}`}>
+                    <div className="md:w-1/2 flex justify-end text-left md:text-right pl-12 md:pl-0">
+                      <div>
+                        <h4 className="font-bold uppercase tracking-tight">{s.state}</h4>
+                        <p className="text-sm text-muted-foreground hidden md:block">{s.desc}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Node */}
+                    <div className="absolute left-0 md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-background border-2 flex items-center justify-center shrink-0 z-10 shadow-[0_0_0_4px_hsl(var(--background))]">
+                      {s.done ? (
+                        <CheckCircle2 className="w-5 h-5 text-accent" />
+                      ) : s.active ? (
+                        <div className="w-2.5 h-2.5 bg-accent rounded-full animate-pulse"></div>
+                      ) : (
+                        <div className="w-2 h-2 bg-border rounded-full"></div>
+                      )}
+                    </div>
+                    
+                    <div className="md:w-1/2 text-left pl-12 md:pl-0">
+                      <span className="font-mono text-xs bg-muted px-2 py-1 border border-border/50">{s.date}</span>
+                      <p className="text-sm text-muted-foreground block md:hidden mt-1">{s.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
 
+          {/* RESEÑAS CURADAS */}
+          <section className="p-6 md:p-12">
+            <h2 className="text-3xl font-bold tracking-tighter uppercase mb-2">Desgaste Real</h2>
+            <p className="text-muted-foreground mb-12 max-w-xl">No escondemos el paso del tiempo. Así se ven nuestras impresiones industriales tras meses de uso continuo y lavados abrasivos.</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="group relative overflow-hidden border border-border">
+                <div className="absolute top-4 left-4 bg-background/90 px-3 py-1 font-mono text-[10px] z-10 border border-border">50+ LAVADOS</div>
+                <img src={`${import.meta.env.BASE_URL}generated_images/vlcn-review-wear.jpg`} alt="Wear Detail" className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div className="p-4 bg-muted border-t border-border">
+                  <p className="text-sm italic">"El degradado natural que toma el estampado le da más carácter. Ningún craquelado estructural."</p>
+                  <p className="font-mono text-xs mt-2 font-bold">— TEST 01 / CLIENTE A.</p>
+                </div>
+              </div>
+              <div className="group relative overflow-hidden border border-border md:translate-y-12">
+                <div className="absolute top-4 left-4 bg-background/90 px-3 py-1 font-mono text-[10px] z-10 border border-border">USO DIARIO (6 MESES)</div>
+                <img src={`${import.meta.env.BASE_URL}generated_images/vlcn-review-editorial.jpg`} alt="Editorial Wear" className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div className="p-4 bg-muted border-t border-border">
+                  <p className="text-sm italic">"La tela se suaviza pero el fit cuadrado se mantiene intacto. El cuello no ha cedido ni un milímetro."</p>
+                  <p className="font-mono text-xs mt-2 font-bold">— TEST 02 / ESTUDIO M.</p>
+                </div>
+              </div>
+            </div>
+          </section>
 
         </main>
 
-        {/* RIGHT PANEL: specs, color, size, price */}
-        <aside className="w-full lg:w-[35%] lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] border-t lg:border-t-0 lg:border-l border-border/40 bg-background p-6 lg:p-10 flex flex-col justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] lg:shadow-none overflow-y-auto">
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tighter uppercase mb-2">Especificaciones</h2>
-              <p className="text-sm text-muted-foreground">Camiseta manga corta 100% algodón peinado, 220 g/m².</p>
-            </div>
+        {/* RIGHT COLUMN: STICKY PRICE TRACKER (Sidebar on Desktop, Footer on Mobile) */}
+        <aside className="w-full lg:w-[30%] lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] border-t lg:border-t-0 border-border/40 bg-background lg:bg-transparent fixed bottom-0 left-0 z-40 p-6 flex flex-col justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] lg:shadow-none">
+          
+          <div className="hidden lg:block space-y-6 flex-1 overflow-y-auto pr-2 pb-6">
+            <h3 className="font-mono text-sm text-muted-foreground border-b border-border pb-4">RESUMEN TÉCNICO</h3>
             
-            {/* Technical specs */}
-            <div className="space-y-6">
-              <div className="flex gap-4 items-start border-b border-border/50 pb-4">
-                <Droplets className="w-5 h-5 text-muted-foreground shrink-0" />
-                <div>
-                  <h4 className="font-mono text-xs font-bold mb-1">ESTAMPADO PERSONALIZADO</h4>
-                  <p className="text-sm">Serigrafía Alta Densidad / DTF Industrial. Estabilidad dimensional garantizada &lt;3% de encogimiento tras 50 lavados.</p>
+            {/* Summary Items */}
+            <div className="space-y-4">
+              <div>
+                <p className="font-mono text-[10px] text-muted-foreground mb-1">PRENDA BASE</p>
+                <div className="flex justify-between items-start">
+                  <p className="font-bold text-sm max-w-[70%]">{base.name}</p>
+                  <p className="font-mono text-sm">{formatCLP(base.price)}</p>
                 </div>
               </div>
-              <div className="flex gap-4 items-start border-b border-border/50 pb-4">
-                <ShieldCheck className="w-5 h-5 text-muted-foreground shrink-0" />
-                <div>
-                  <h4 className="font-mono text-xs font-bold mb-1">RESISTENCIA</h4>
-                  <p className="text-sm">Curado a 160°C. Resiste fricción mecánica y lavados abrasivos sin craquelado prematuro.</p>
+              <div>
+                <p className="font-mono text-[10px] text-muted-foreground mb-1">IMPRESIÓN</p>
+                <div className="flex justify-between items-start">
+                  <p className="font-bold text-sm max-w-[70%]">{print.name} ({placement.name})</p>
+                  <p className="font-mono text-sm">+{formatCLP(PRINT_PRICE)}</p>
                 </div>
               </div>
-            </div>
-
-            {/* Color swatches */}
-            <div>
-              <h4 className="font-mono text-xs font-bold mb-4">ELIGE TU COLOR:</h4>
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex gap-3">
-                  {COLORS.map(c => (
-                    <button
-                      key={c.id}
-                      onClick={() => setSelectedColor(c.id)}
-                      onMouseEnter={() => setHoveredColor(c.id)}
-                      onMouseLeave={() => setHoveredColor(null)}
-                      className={`w-12 h-12 rounded-full border-2 transition-all shadow-sm ${selectedColor === c.id ? 'border-accent ring-2 ring-accent/30 scale-110' : 'border-border hover:border-foreground/60 hover:scale-105'}`}
-                      style={{ backgroundColor: c.hex }}
-                      title={c.name}
-                      aria-label={c.name}
-                    />
-                  ))}
+              
+              <div className="pt-4 border-t border-border">
+                <p className="font-mono text-[10px] text-muted-foreground mb-2">CANTIDAD</p>
+                <div className="flex items-center gap-4">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 border hover:bg-muted transition-colors"><Minus className="w-4 h-4" /></button>
+                  <span className="font-mono text-lg w-8 text-center">{quantity}</span>
+                  <button onClick={() => setQuantity(quantity + 1)} className="p-2 border hover:bg-muted transition-colors"><Plus className="w-4 h-4" /></button>
                 </div>
-                <div className="flex items-center gap-3 border-l border-border/60 pl-4">
-                  <span className="w-12 h-12 rounded-full border border-border/60 shadow-sm" style={{ backgroundColor: currentColor.hex }} />
-                  <p className="font-mono text-sm font-bold">COLOR: {currentColor.name}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Size selection */}
-            <div>
-              <div className="flex justify-between items-end mb-4">
-                <h4 className="font-mono text-xs font-bold">SELECCIÓN DE TALLA (EU)</h4>
-                <button className="flex items-center gap-1 font-mono text-[10px] text-accent hover:underline">
-                  <Ruler className="w-3 h-3" /> VER TABLA COMPARATIVA
-                </button>
-              </div>
-              <div className="flex gap-2">
-                {SIZES.map(s => (
-                  <button 
-                    key={s}
-                    onClick={() => setSize(s)}
-                    className={`flex-1 py-3 font-mono text-sm border transition-colors ${size === s ? 'bg-foreground text-background border-foreground' : 'bg-background hover:border-foreground/40'}`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-              <div className="mt-3 flex items-center gap-2 text-xs font-mono text-muted-foreground">
-                <Ruler className="w-3.5 h-3.5 shrink-0" />
-                <span>
-                  TALLA {size} — MEDIDA DEL ESTAMPADO: <span className="font-bold text-foreground">{printMeasure}</span>
-                </span>
-              </div>
-              <div className="mt-2 font-mono text-[10px] text-muted-foreground/80 leading-relaxed">
-                Talla S: 25 × 35 cm (prenda 50cm) · Talla M: 27 × 37 cm (52cm) · Talla L: 29 × 39 cm (54cm) · Talla XL: 31 × 41 cm (57cm) · Talla 2XL: 33 × 43 cm (60cm)
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom: quantity, shipping, price, buttons */}
-          <div className="mt-8 space-y-6">
-            <div className="pt-6 border-t border-border">
-              <p className="font-mono text-[10px] text-muted-foreground mb-2">CANTIDAD</p>
-              <div className="flex items-center gap-4">
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 border hover:bg-muted transition-colors"><Minus className="w-4 h-4" /></button>
-                <span className="font-mono text-lg w-8 text-center">{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)} className="p-2 border hover:bg-muted transition-colors"><Plus className="w-4 h-4" /></button>
               </div>
             </div>
 
             {/* Ubicación y Envío */}
-            <div className="pt-4 border-t border-border space-y-3">
+            <div className="pt-4 border-t border-border space-y-3 mt-6">
               <p className="font-mono text-[10px] text-muted-foreground mb-1 flex items-center gap-2">
                 <MapPin className="w-3 h-3" /> UBICACIÓN Y ENVÍO
               </p>
@@ -372,7 +634,8 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
 
               {isOutsideTemuco ? (
                 <div className="p-4 bg-muted border border-border/50 space-y-2">
-                  <h4 className="font-bold text-xs uppercase tracking-tight">Costos de Envío Región de La Araucanía</h4>
+                  <h4 className="font-bold text-xs uppercase tracking-tight">Costos de Envío Región de La Araucanía vía Blue Express</h4>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">El valor del despacho se calcula según la cantidad de poleras en tu pedido:</p>
                   <ul className="text-[10px] font-mono space-y-1 pt-1">
                     <li className={quantity >= 1 && quantity <= 2 ? 'text-accent font-bold' : 'text-muted-foreground'}>1 a 2 poleras: {formatCLP(3100)}</li>
                     <li className={quantity >= 3 && quantity <= 10 ? 'text-accent font-bold' : 'text-muted-foreground'}>3 a 10 poleras: {formatCLP(3650)}</li>
@@ -386,28 +649,35 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 </div>
               )}
             </div>
+          </div>
 
-            <div className="pt-4 border-t border-border">
-              <p className="font-mono text-[10px] text-muted-foreground mb-1">TOTAL ESTIMADO</p>
+          {/* Mobile minimal view & Desktop total */}
+          <div className="flex lg:flex-col items-center lg:items-stretch justify-between gap-4 lg:gap-6 lg:border-t lg:border-border lg:pt-6 bg-background">
+            <div className="flex-1 lg:flex-none">
+              <p className="font-mono text-[10px] text-muted-foreground hidden lg:block mb-1">TOTAL ESTIMADO</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold tracking-tighter">{formatCLP(total)}</span>
                 <span className="font-mono text-xs text-muted-foreground">CLP</span>
               </div>
+              <p className="text-[10px] text-muted-foreground lg:hidden">Base + Impresión {isOutsideTemuco ? `+ Envío ${formatCLP(shipping)}` : '+ Envío gratis (Temuco)'}</p>
             </div>
-
-            <div className="flex gap-2">
+            
+            <div className="flex gap-2 flex-col lg:flex-row lg:w-full w-auto">
               <button 
                 onClick={handleSaveConfig}
-                className="p-4 border border-border hover:border-foreground flex items-center justify-center transition-colors shrink-0"
+                className="p-4 border border-border hover:border-foreground flex items-center justify-center transition-colors lg:w-16 w-12 h-12 lg:h-auto shrink-0"
                 title="Guardar Configuración"
               >
                 <Save className="w-5 h-5" />
               </button>
-              <button onClick={() => setCheckoutOpen(true)} className="bg-foreground text-background font-mono text-sm h-14 px-6 flex-1 flex items-center justify-center gap-2 hover:bg-accent transition-colors group">
-                INICIAR PEDIDO <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              <button onClick={() => setCheckoutOpen(true)} className="bg-foreground text-background font-mono text-sm h-12 lg:h-14 px-6 flex-1 flex items-center justify-center gap-2 hover:bg-accent transition-colors group">
+                <span className="hidden sm:inline">INICIAR PEDIDO</span>
+                <span className="sm:hidden">PEDIR</span>
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </button>
             </div>
           </div>
+
         </aside>
 
       </div>
