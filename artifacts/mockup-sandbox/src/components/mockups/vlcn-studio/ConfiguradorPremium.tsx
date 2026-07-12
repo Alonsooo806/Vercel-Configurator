@@ -13,7 +13,7 @@ const BASES = [
     name: 'CAMISETA MANGA CORTA', 
     price: 4000, 
     specs: '100% Algodón Peinado, 220 g/m²', 
-    fitLabel: 'TALLA: S, M, L, XL, XXL',
+    fitLabel: 'TALLA: S, M, L, XL, 2XL',
     img: '/__mockup/generated_images/vlcn-base-tee.png' 
   },
   { 
@@ -70,7 +70,16 @@ const getShippingCost = (qty: number) => {
   return qty > 20 ? SHIPPING_TIERS[SHIPPING_TIERS.length - 1].price : SHIPPING_TIERS[0].price;
 };
 
-const SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
+const SIZES = ['S', 'M', 'L', 'XL', '2XL'];
+
+const PRINT_SIZE_BY_TALLA: Record<string, string> = {
+  S: '25 × 35 cm',
+  M: '27 × 39 cm',
+  L: '27 × 39 cm',
+  XL: '30 × 41 cm',
+  '2XL': '30 × 41 cm',
+};
+const LOGO_PECHO_SIZE = '10 × 10 cm';
 
 export default function ConfiguradorPremium() {
   // --- STATE ---
@@ -112,7 +121,9 @@ export default function ConfiguradorPremium() {
   const colorIndex = COLORS.findIndex(c => c.id === selectedColor);
   const currentColor = COLORS[colorIndex];
   const nextColor = () => setSelectedColor(COLORS[(colorIndex + 1) % COLORS.length].id);
-  const viewerImg = selectedBase === 'tee' ? currentColor.img : base.img;
+  const viewerImg = (selectedBase === 'tee' || uploadedDesign) ? currentColor.img : base.img;
+  const printOverlayImg = uploadedDesign || print.img;
+  const printMeasure = selectedPlacement === 'pecho' ? LOGO_PECHO_SIZE : PRINT_SIZE_BY_TALLA[size];
   
   const unitPrice = base.price + PRINT_PRICE;
   const subtotal = unitPrice * quantity;
@@ -347,8 +358,8 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.35] origin-center"
                 />
                 {/* Simulated overlay for print preview */}
-                <div className="absolute inset-0 flex items-center justify-center mix-blend-multiply opacity-80 pointer-events-none">
-                   <img src={print.img} className="w-1/3 transition-transform duration-1000 group-hover:scale-[1.35]" style={{
+                <div className={`absolute inset-0 flex items-center justify-center pointer-events-none ${uploadedDesign ? '' : 'mix-blend-multiply opacity-80'}`}>
+                   <img src={printOverlayImg} className="w-1/3 transition-transform duration-1000 group-hover:scale-[1.35]" style={{
                      transform: selectedPlacement === 'pecho' ? 'translateY(-20%) scale(0.6)' : 
                                 selectedPlacement === 'espalda' ? 'scale(1)' : 'translateX(-30%) translateY(-10%) scale(0.4)'
                    }} />
@@ -376,7 +387,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                   </div>
                 </div>
 
-                {selectedBase === 'tee' && (
+                {(selectedBase === 'tee' || uploadedDesign) && (
                   <div className="mb-10">
                     <h4 className="font-mono text-xs font-bold mb-4">ELIGE TU COLOR:</h4>
                     <div className="flex flex-wrap items-center gap-4">
@@ -417,6 +428,15 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                         {s}
                       </button>
                     ))}
+                  </div>
+                  <div className="mt-3 flex items-center gap-2 text-xs font-mono text-muted-foreground">
+                    <Ruler className="w-3.5 h-3.5 shrink-0" />
+                    <span>
+                      MEDIDA DEL ESTAMPADO ({size}{selectedPlacement === 'pecho' ? ', pecho' : ''}): <span className="font-bold text-foreground">{printMeasure}</span>
+                    </span>
+                  </div>
+                  <div className="mt-2 font-mono text-[10px] text-muted-foreground/80 leading-relaxed">
+                    Talla S: 25 × 35 cm · Talla M y L: 27 × 39 cm · Talla XL y 2XL: 30 × 41 cm · Logotipos (pecho): 10 × 10 cm
                   </div>
                 </div>
                 
