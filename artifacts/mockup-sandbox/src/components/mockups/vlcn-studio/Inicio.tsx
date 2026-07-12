@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { ArrowRight, ChevronRight, ShieldCheck, Ruler, Droplets } from 'lucide-react';
 
 const SLIDES = [
-  '/__mockup/generated_images/vlcn-inicio-slide-1.jpg',
-  '/__mockup/generated_images/vlcn-inicio-slide-2.jpg',
-  '/__mockup/generated_images/vlcn-inicio-slide-3.png',
+  `${import.meta.env.BASE_URL}generated_images/vlcn-inicio-slide-1.jpg`,
+  `${import.meta.env.BASE_URL}generated_images/vlcn-inicio-slide-2.jpg`,
+  `${import.meta.env.BASE_URL}generated_images/vlcn-inicio-slide-3.png`,
 ];
 
 export default function Inicio() {
   const [slide, setSlide] = useState(0);
 
   const goToConfigurador = () => {
-    window.location.href = '/__mockup/preview/vlcn-studio/ConfiguradorPremium';
+    window.location.href = `${import.meta.env.BASE_URL}configurador`;
   };
 
   const nextSlide = () => setSlide((prev) => (prev + 1) % SLIDES.length);
@@ -22,7 +22,7 @@ export default function Inicio() {
       {/* HEADER */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border/40 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img src="/__mockup/generated_images/vlcn-logo.png" alt="VLCN Studio" className="h-8 w-auto object-contain" />
+          <img src={`${import.meta.env.BASE_URL}generated_images/vlcn-logo.png`} alt="VLCN Studio" className="h-8 w-auto object-contain" />
           <h1 className="font-bold tracking-tighter text-xl">VLCN STUDIO</h1>
         </div>
         <span className="hidden md:inline-flex text-sm font-mono text-muted-foreground">TALLER TÉCNICO V1.0</span>

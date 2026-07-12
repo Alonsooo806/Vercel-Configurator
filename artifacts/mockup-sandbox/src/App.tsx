@@ -1,6 +1,8 @@
 import { useEffect, useState, type ComponentType } from "react";
 
 import { modules as discoveredModules } from "./.generated/mockup-components";
+import Inicio from "./components/mockups/vlcn-studio/Inicio";
+import ConfiguradorPremium from "./components/mockups/vlcn-studio/ConfiguradorPremium";
 
 type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
 
@@ -128,6 +130,19 @@ function getPreviewPath(): string | null {
   return match ? match[1] : null;
 }
 
+function getSiteRoute(): "home" | "configurador" | null {
+  const basePath = getBasePath();
+  const { pathname } = window.location;
+  const local =
+    basePath && pathname.startsWith(basePath)
+      ? pathname.slice(basePath.length) || "/"
+      : pathname;
+
+  if (local === "/" || local === "") return "home";
+  if (local === "/configurador") return "configurador";
+  return null;
+}
+
 function App() {
   const previewPath = getPreviewPath();
 
@@ -139,6 +154,14 @@ function App() {
       />
     );
   }
+
+  // Outside of the Replit canvas preview server, this app is the VLCN
+  // Studio site itself: "/" is the landing page and "/configurador" is the
+  // product configurator (both existing mockup components, wired up as the
+  // real site routes for a standalone deployment).
+  const siteRoute = getSiteRoute();
+  if (siteRoute === "home") return <Inicio />;
+  if (siteRoute === "configurador") return <ConfiguradorPremium />;
 
   return <Gallery />;
 }

@@ -14,7 +14,7 @@ const BASES = [
     price: 4000, 
     specs: '100% Algodón Peinado, 220 g/m²', 
     fitLabel: 'TALLA: S, M, L, XL, 2XL',
-    img: '/__mockup/generated_images/vlcn-base-tee.png' 
+    img: `generated_images/vlcn-base-tee.png` 
   },
   { 
     id: 'longsleeve', 
@@ -22,19 +22,19 @@ const BASES = [
     price: 5000, 
     specs: '100% Algodón Orgánico, 200 g/m²', 
     fitLabel: 'TALLA: ELIGE LA TALLA QUE QUIERAS',
-    img: '/__mockup/generated_images/vlcn-base-longsleeve.jpg' 
+    img: `generated_images/vlcn-base-longsleeve.jpg` 
   }
 ];
 
 const COLORS = [
-  { id: 'negro', name: 'NEGRO', img: '/__mockup/generated_images/vlcn-base-tee-color1.png' },
-  { id: 'blanco', name: 'BLANCO', img: '/__mockup/generated_images/vlcn-base-tee-color2.png' },
-  { id: 'multicolor', name: 'COLOR', img: '/__mockup/generated_images/vlcn-base-tee-color3.png' }
+  { id: 'negro', name: 'NEGRO', img: `generated_images/vlcn-base-tee-color1.png` },
+  { id: 'blanco', name: 'BLANCO', img: `generated_images/vlcn-base-tee-color2.png` },
+  { id: 'multicolor', name: 'COLOR', img: `generated_images/vlcn-base-tee-color3.png` }
 ];
 
 const PRINTS = [
-  { id: 'brutalist', name: 'BRUTALIST ARCHIVE', img: '/__mockup/generated_images/vlcn-print-brutalist.jpg' },
-  { id: 'schematic', name: 'CYBER SCHEMATIC', img: '/__mockup/generated_images/vlcn-print-schematic.jpg' }
+  { id: 'brutalist', name: 'BRUTALIST ARCHIVE', img: `generated_images/vlcn-print-brutalist.jpg` },
+  { id: 'schematic', name: 'CYBER SCHEMATIC', img: `generated_images/vlcn-print-schematic.jpg` }
 ];
 
 const PLACEMENTS = [
@@ -199,10 +199,10 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
       {/* HEADER */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-b border-border/40 px-6 py-4 flex items-center justify-between">
         <button
-          onClick={() => { window.location.href = '/__mockup/preview/vlcn-studio/Inicio'; }}
+          onClick={() => { window.location.href = import.meta.env.BASE_URL; }}
           className="flex items-center gap-3 hover:opacity-70 transition-opacity"
         >
-          <img src="/__mockup/generated_images/vlcn-logo.png" alt="VLCN Studio" className="h-8 w-auto object-contain" />
+          <img src={`${import.meta.env.BASE_URL}generated_images/vlcn-logo.png`} alt="VLCN Studio" className="h-8 w-auto object-contain" />
           <h1 className="font-bold tracking-tighter text-xl">VLCN STUDIO</h1>
         </button>
         <div className="flex items-center gap-6 text-sm font-mono">
@@ -544,7 +544,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="group relative overflow-hidden border border-border">
                 <div className="absolute top-4 left-4 bg-background/90 px-3 py-1 font-mono text-[10px] z-10 border border-border">50+ LAVADOS</div>
-                <img src="/__mockup/generated_images/vlcn-review-wear.jpg" alt="Wear Detail" className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-700" />
+                <img src={`${import.meta.env.BASE_URL}generated_images/vlcn-review-wear.jpg`} alt="Wear Detail" className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="p-4 bg-muted border-t border-border">
                   <p className="text-sm italic">"El degradado natural que toma el estampado le da más carácter. Ningún craquelado estructural."</p>
                   <p className="font-mono text-xs mt-2 font-bold">— TEST 01 / CLIENTE A.</p>
@@ -552,7 +552,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
               </div>
               <div className="group relative overflow-hidden border border-border md:translate-y-12">
                 <div className="absolute top-4 left-4 bg-background/90 px-3 py-1 font-mono text-[10px] z-10 border border-border">USO DIARIO (6 MESES)</div>
-                <img src="/__mockup/generated_images/vlcn-review-editorial.jpg" alt="Editorial Wear" className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-700" />
+                <img src={`${import.meta.env.BASE_URL}generated_images/vlcn-review-editorial.jpg`} alt="Editorial Wear" className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="p-4 bg-muted border-t border-border">
                   <p className="text-sm italic">"La tela se suaviza pero el fit cuadrado se mantiene intacto. El cuello no ha cedido ni un milímetro."</p>
                   <p className="font-mono text-xs mt-2 font-bold">— TEST 02 / ESTUDIO M.</p>
@@ -806,7 +806,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
 
               {/* Link de salida */}
               <button
-                onClick={() => { window.location.href = '/__mockup/preview/vlcn-studio/Inicio'; }}
+                onClick={() => { window.location.href = import.meta.env.BASE_URL; }}
                 className="w-full text-center text-xs text-slate-400 hover:text-slate-600 underline underline-offset-2"
               >
                 Anular compra y volver a VLCN STUDIO
