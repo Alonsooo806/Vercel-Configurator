@@ -25,7 +25,11 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH ?? "/";
+const rawBasePath = process.env.BASE_PATH ?? "/";
+// Vite's import.meta.env.BASE_URL is whatever `base` is set to, verbatim —
+// it does NOT auto-append a trailing slash. Without it, paths like
+// `${BASE_URL}generated_images/x.jpg` collapse into `/__mockupgenerated_images/x.jpg`.
+const basePath = rawBasePath.endsWith("/") ? rawBasePath : `${rawBasePath}/`;
 
 export default defineConfig({
   base: basePath,
