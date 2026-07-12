@@ -1,1 +1,2 @@
 - [Color mockups for product configurator](color-mockups.md) — generate masked static color variants instead of relying on CSS blend modes to tint a non-transparent base image.
+- [Image generation fallback](image-generation-fallback.md) — when a user-provided image URL doesn't match the described asset, generate it from their prompt instead of using a mismatched file.

@@ -156,7 +156,7 @@ export default function ConfiguradorPremium() {
   const currentColor = COLORS[colorIndex];
   const previewColor = COLORS.find(c => c.id === hoveredColor) || currentColor;
   const nextColor = () => setSelectedColor(COLORS[(colorIndex + 1) % COLORS.length].id);
-  const viewerImg = previewColor.img;
+  const viewerImg = 'generated_images/vlcn-emerald-tee.png';
   // El estampado de un diseño propio subido por el cliente siempre sigue la Tabla de Escalamiento
   // completa (S 25×35 … 2XL 33×43), sin excepción de tamaño fijo. La excepción de logo fijo
   // (10×10cm) sólo aplica al placement "pecho" cuando se usa un gráfico de catálogo pequeño.
