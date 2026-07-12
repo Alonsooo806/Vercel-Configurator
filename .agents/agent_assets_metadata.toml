@@ -1,0 +1,14 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "JQEkA3Pva0isoskrldVlp"
+uri = "file://artifacts/mockup-sandbox/public/generated_images/vlcn-scale-demo-S-white.jpg"
+type = "image"
+title = "VLCN Studio — Talla S (25×35 cm) en blanco"
+
+[[outputs]]
+id = "O-r2-_BBCImOo56-_4-22"
+uri = "file://artifacts/mockup-sandbox/public/generated_images/vlcn-scale-demo-2XL-beige.jpg"
+type = "image"
+title = "VLCN Studio — Talla 2XL (38×50 cm) en beige"
