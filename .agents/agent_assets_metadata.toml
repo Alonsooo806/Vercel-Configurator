@@ -18,3 +18,33 @@ id = "-pWYbaDe4A8qSZL6vBpG4"
 uri = "file://screenshots/vlcn-configurador-preview.jpg"
 type = "image"
 title = "VLCN Configurador - Preview"
+
+[[outputs]]
+id = "zBKMYAczQQbIiX066-X9F"
+uri = "file://artifacts/mockup-sandbox/public/generated_images/vlcn-shirt-blanco.png"
+type = "image"
+title = "Shirt - Blanco"
+
+[[outputs]]
+id = "yTNqYwihthEiELcUE-vH7"
+uri = "file://artifacts/mockup-sandbox/public/generated_images/vlcn-shirt-negro.png"
+type = "image"
+title = "Shirt - Negro"
+
+[[outputs]]
+id = "CpQ1mG5pJ1q764KAI-wIs"
+uri = "file://artifacts/mockup-sandbox/public/generated_images/vlcn-shirt-rojo.png"
+type = "image"
+title = "Shirt - Rojo"
+
+[[outputs]]
+id = "ilJs9jqvavPEtwbWzXpUw"
+uri = "file://artifacts/mockup-sandbox/public/generated_images/vlcn-shirt-verde.png"
+type = "image"
+title = "Shirt - Verde"
+
+[[outputs]]
+id = "xVR0NngjRMEJJQvCvMisT"
+uri = "file://screenshots/vlcn-configurador-v2.jpg"
+type = "image"
+title = "VLCN Configurador V2 - Preview"
