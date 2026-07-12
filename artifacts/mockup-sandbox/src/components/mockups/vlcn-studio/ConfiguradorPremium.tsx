@@ -3,7 +3,7 @@ import {
   ChevronRight, ChevronLeft, ArrowRight, ArrowLeft,
   CheckCircle2, Ruler, Droplets, Info, Plus, Minus,
   MessageCircle, X, Check, Save, Share2, Package, Eye,
-  ShieldCheck, ArrowUpRight, CreditCard, QrCode, MapPin
+  ShieldCheck, ArrowUpRight, MapPin
 } from 'lucide-react';
 
 // --- MOCK DATA ---
@@ -91,8 +91,6 @@ export default function ConfiguradorPremium() {
   const [comuna, setComuna] = useState('');
 
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'tarjeta' | 'onepay'>('tarjeta');
-  const [cardNumber, setCardNumber] = useState('');
 
   const [selectedColor, setSelectedColor] = useState(COLORS[1].id); // blanco
 
@@ -110,11 +108,6 @@ export default function ConfiguradorPremium() {
   const isOutsideTemuco = city === 'otra';
   const shipping = isOutsideTemuco ? getShippingCost(quantity) : 0;
   const total = subtotal + shipping;
-
-  const formatCardNumber = (value: string) => {
-    const digits = value.replace(/\D/g, '').slice(0, 16);
-    return digits.replace(/(.{4})/g, '$1 ').trim();
-  };
 
   // --- HANDLERS ---
   const handleSaveConfig = () => {
@@ -689,84 +682,21 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 </div>
               </div>
 
-              {/* Selector de medios */}
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => setPaymentMethod('tarjeta')}
-                  className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-colors ${paymentMethod === 'tarjeta' ? 'border-purple-700 bg-purple-50' : 'border-slate-200 hover:border-slate-300'}`}
-                >
-                  <CreditCard className={`w-6 h-6 ${paymentMethod === 'tarjeta' ? 'text-purple-700' : 'text-slate-500'}`} />
-                  <span className="text-xs font-bold text-slate-700 text-center leading-tight">Tarjetas<br /><span className="font-normal text-[10px] text-slate-400">Crédito, Débito, Prepago</span></span>
-                </button>
-                <button
-                  onClick={() => setPaymentMethod('onepay')}
-                  className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-colors ${paymentMethod === 'onepay' ? 'border-purple-700 bg-purple-50' : 'border-slate-200 hover:border-slate-300'}`}
-                >
-                  <QrCode className={`w-6 h-6 ${paymentMethod === 'onepay' ? 'text-purple-700' : 'text-slate-500'}`} />
-                  <span className="text-xs font-bold text-slate-700 text-center leading-tight">OnePay<br /><span className="font-normal text-[10px] text-slate-400">Billeteras Digitales</span></span>
-                </button>
+              {/* Redirección externa a Webpay */}
+              <div className="flex flex-col items-center gap-3 py-6 rounded-xl border border-dashed border-slate-200 bg-slate-50 text-center px-4">
+                <ShieldCheck className="w-8 h-8 text-purple-700" />
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Serás redirigido al sitio oficial y seguro de <span className="font-bold text-purple-800">Webpay Plus (Transbank)</span> para ingresar los datos de tu tarjeta. VLCN Studio nunca almacena ni ve tu información de pago.
+                </p>
               </div>
-
-              {/* Formulario de pago */}
-              {paymentMethod === 'tarjeta' ? (
-                <div className="space-y-3">
-                  <div className="rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 text-white p-5 relative overflow-hidden">
-                    <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-fuchsia-500/20"></div>
-                    <div className="absolute -right-2 top-10 w-16 h-16 rounded-full bg-teal-400/20"></div>
-                    <div className="w-9 h-7 rounded bg-gradient-to-br from-yellow-300 to-yellow-500 mb-6"></div>
-                    <p className="font-mono text-lg tracking-widest">
-                      {cardNumber ? formatCardNumber(cardNumber) : 'XXXX XXXX XXXX XXXX'}
-                    </p>
-                    <div className="flex justify-between mt-4 text-[10px] font-mono text-slate-300 uppercase">
-                      <span>Titular de la tarjeta</span>
-                      <span>MM/AA</span>
-                    </div>
-                  </div>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    placeholder="Número de tarjeta"
-                    value={formatCardNumber(cardNumber)}
-                    onChange={e => setCardNumber(e.target.value)}
-                    className="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:border-purple-600 font-mono text-sm tracking-widest"
-                  />
-                  <div className="grid grid-cols-2 gap-3">
-                    <input type="text" placeholder="MM/AA" className="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:border-purple-600 font-mono text-sm" />
-                    <input type="text" placeholder="CVV" className="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:border-purple-600 font-mono text-sm" />
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3 py-4 rounded-xl border border-dashed border-slate-200 bg-slate-50">
-                  <div className="w-32 h-32 rounded-lg bg-white border border-slate-200 flex items-center justify-center">
-                    <QrCode className="w-20 h-20 text-slate-800" />
-                  </div>
-                  <p className="text-xs text-slate-500 text-center px-6">Escanea el código QR con tu app OnePay o billetera digital para completar el pago.</p>
-                </div>
-              )}
 
               {/* CTA */}
               <button
                 onClick={() => setCheckoutOpen(false)}
                 className="w-full bg-purple-900 hover:bg-purple-950 text-white font-bold text-sm py-4 rounded-xl transition-colors tracking-wide"
               >
-                Continuar
+                Pagar con Webpay
               </button>
-
-              {/* Footer de seguridad */}
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                {[
-                  { label: 'VISA', cls: 'text-blue-700' },
-                  { label: 'Mastercard', cls: 'text-orange-600' },
-                  { label: 'AMEX', cls: 'text-sky-700' },
-                  { label: 'Diners Club', cls: 'text-slate-600' },
-                  { label: 'Magna', cls: 'text-slate-900' },
-                  { label: 'RedCompra', cls: 'text-emerald-700' },
-                ].map(card => (
-                  <span key={card.label} className={`text-[9px] font-black uppercase tracking-tight border border-slate-200 rounded px-2 py-1 ${card.cls}`}>
-                    {card.label}
-                  </span>
-                ))}
-              </div>
 
               {/* Link de salida */}
               <button
