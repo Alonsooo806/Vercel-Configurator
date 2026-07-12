@@ -81,6 +81,15 @@ const PRINT_SIZE_BY_TALLA: Record<string, string> = {
 };
 const LOGO_PECHO_SIZE = '10 × 10 cm';
 
+// Escala relativa del estampado según talla, tomando Talla M/L (27cm de ancho) como referencia base.
+const PRINT_SCALE_BY_TALLA: Record<string, number> = {
+  S: 25 / 27,
+  M: 1,
+  L: 1,
+  XL: 30 / 27,
+  '2XL': 30 / 27,
+};
+
 export default function ConfiguradorPremium() {
   // --- STATE ---
   const [step, setStep] = useState(1);
@@ -124,6 +133,7 @@ export default function ConfiguradorPremium() {
   const viewerImg = (selectedBase === 'tee' || uploadedDesign) ? currentColor.img : base.img;
   const printOverlayImg = uploadedDesign || print.img;
   const printMeasure = selectedPlacement === 'pecho' ? LOGO_PECHO_SIZE : PRINT_SIZE_BY_TALLA[size];
+  const printScale = selectedPlacement === 'pecho' ? 1 : PRINT_SCALE_BY_TALLA[size];
   
   const unitPrice = base.price + PRINT_PRICE;
   const subtotal = unitPrice * quantity;
@@ -361,7 +371,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 <div className={`absolute inset-0 flex items-center justify-center pointer-events-none ${uploadedDesign ? '' : 'mix-blend-multiply opacity-80'}`}>
                    <img src={printOverlayImg} className="w-1/3 transition-transform duration-1000 group-hover:scale-[1.35]" style={{
                      transform: selectedPlacement === 'pecho' ? 'translateY(-20%) scale(0.6)' : 
-                                selectedPlacement === 'espalda' ? 'scale(1)' : 'translateX(-30%) translateY(-10%) scale(0.4)'
+                                selectedPlacement === 'espalda' ? `scale(${printScale})` : `translateX(-30%) translateY(-10%) scale(${0.4 * printScale})`
                    }} />
                 </div>
               </div>
