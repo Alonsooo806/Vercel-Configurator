@@ -85,8 +85,23 @@ const PRINT_SIZE_BY_TALLA: Record<string, string> = Object.fromEntries(
 );
 const LOGO_PECHO_SIZE = '10 × 10 cm';
 
+// Ancho real de la prenda (a lo ancho de pecho, extendida) por talla, en cm.
+const GARMENT_WIDTH_BY_TALLA: Record<string, number> = {
+  S: 50,
+  M: 52,
+  L: 54,
+  XL: 57,
+  '2XL': 60,
+};
+
+// Regla de oro: el estampado "grande" ocupa siempre ~50-55% del ancho de la prenda,
+// sin importar la talla, de modo que la presencia visual del diseño se perciba idéntica
+// en todas las tallas (crece en cm absolutos, pero mantiene la misma proporción relativa).
+// Esto también garantiza un margen libre de al menos 10cm a cada lado (costuras laterales).
+const getPrintWidthRatio = (talla: string) => PRINT_DIMENSIONS_BY_TALLA[talla].w / GARMENT_WIDTH_BY_TALLA[talla];
+
 // Escala relativa (ancho y alto) del estampado según talla, tomando Talla M (27x37cm) como referencia base.
-// El escalado es proporcional al área disponible en cada talla y mantiene el centro del estampado fijo.
+// Se usa únicamente para el alto (que no está definido como % de la prenda), y mantiene el centro fijo.
 const PRINT_REF = PRINT_DIMENSIONS_BY_TALLA.M;
 const getPrintScale = (talla: string) => ({
   x: PRINT_DIMENSIONS_BY_TALLA[talla].w / PRINT_REF.w,
@@ -141,6 +156,16 @@ export default function ConfiguradorPremium() {
   const isPechoLogoFijo = selectedPlacement === 'pecho' && !uploadedDesign;
   const printMeasure = isPechoLogoFijo ? LOGO_PECHO_SIZE : PRINT_SIZE_BY_TALLA[size];
   const printScale = isPechoLogoFijo ? { x: 1, y: 1 } : getPrintScale(size);
+  // Regla de oro: el ancho visible del estampado se mantiene siempre ~50-55% del ancho de la
+  // prenda (constante en todas las tallas), dejando siempre ≥10cm libres a cada costura lateral.
+  const printWidthRatioPct = getPrintWidthRatio(size) * 100;
+  const printWidthPercent = isPechoLogoFijo
+    ? 20 // logo fijo de catálogo (10×10cm), ancho de display constante independiente de la talla
+    : selectedPlacement === 'pecho'
+      ? printWidthRatioPct * 0.6
+      : selectedPlacement === 'espalda'
+        ? printWidthRatioPct
+        : printWidthRatioPct * 0.4; // manga
   
   const unitPrice = base.price + PRINT_PRICE;
   const subtotal = unitPrice * quantity;
@@ -376,10 +401,11 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 />
                 {/* Simulated overlay for print preview */}
                 <div className={`absolute inset-0 flex items-center justify-center pointer-events-none ${uploadedDesign ? '' : 'mix-blend-multiply opacity-80'}`}>
-                   <img src={printOverlayImg} className="w-1/3 transition-transform duration-1000 group-hover:scale-[1.35] origin-center" style={{
-                     transform: selectedPlacement === 'pecho' ? 
-                                  (isPechoLogoFijo ? 'translateY(-20%) scale(0.6)' : `translateY(-15%) scale(${0.6 * printScale.x}, ${0.6 * printScale.y})`) : 
-                                selectedPlacement === 'espalda' ? `scale(${printScale.x}, ${printScale.y})` : `translateX(-30%) translateY(-10%) scale(${0.4 * printScale.x}, ${0.4 * printScale.y})`
+                   <img src={printOverlayImg} className="h-auto transition-[width,transform] duration-1000 group-hover:scale-[1.35] origin-center" style={{
+                     width: `${printWidthPercent}%`,
+                     transform: selectedPlacement === 'pecho' ?
+                                  (isPechoLogoFijo ? 'translateY(-20%)' : 'translateY(-15%)') :
+                                selectedPlacement === 'espalda' ? 'none' : 'translateX(-30%) translateY(-10%)'
                    }} />
                 </div>
               </div>
@@ -454,7 +480,10 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                     </span>
                   </div>
                   <div className="mt-2 font-mono text-[10px] text-muted-foreground/80 leading-relaxed">
-                    Talla S: 25 × 35 cm · Talla M: 27 × 37 cm · Talla L: 29 × 39 cm · Talla XL: 31 × 41 cm · Talla 2XL: 33 × 43 cm · Logotipos (pecho): 10 × 10 cm
+                    Talla S: 25 × 35 cm (prenda 50cm) · Talla M: 27 × 37 cm (52cm) · Talla L: 29 × 39 cm (54cm) · Talla XL: 31 × 41 cm (57cm) · Talla 2XL: 33 × 43 cm (60cm) · Logotipos (pecho): 10 × 10 cm
+                  </div>
+                  <div className="mt-1 font-mono text-[10px] text-muted-foreground/60 leading-relaxed">
+                    El estampado ocupa ~{printWidthRatioPct.toFixed(0)}% del ancho de la prenda en talla {size} — proporción constante en todas las tallas, con margen libre a cada costura.
                   </div>
                 </div>
                 
