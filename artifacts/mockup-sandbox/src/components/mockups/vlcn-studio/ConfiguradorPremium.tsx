@@ -72,23 +72,26 @@ const getShippingCost = (qty: number) => {
 
 const SIZES = ['S', 'M', 'L', 'XL', '2XL'];
 
-const PRINT_SIZE_BY_TALLA: Record<string, string> = {
-  S: '25 × 35 cm',
-  M: '27 × 39 cm',
-  L: '27 × 39 cm',
-  XL: '30 × 41 cm',
-  '2XL': '30 × 41 cm',
+// Tabla de Escalamiento de Estampado (ancho x alto en cm sobre la prenda)
+const PRINT_DIMENSIONS_BY_TALLA: Record<string, { w: number; h: number }> = {
+  S: { w: 25, h: 35 },
+  M: { w: 27, h: 37 },
+  L: { w: 29, h: 39 },
+  XL: { w: 31, h: 41 },
+  '2XL': { w: 33, h: 43 },
 };
+const PRINT_SIZE_BY_TALLA: Record<string, string> = Object.fromEntries(
+  Object.entries(PRINT_DIMENSIONS_BY_TALLA).map(([k, { w, h }]) => [k, `${w} × ${h} cm`])
+);
 const LOGO_PECHO_SIZE = '10 × 10 cm';
 
-// Escala relativa del estampado según talla, tomando Talla M/L (27cm de ancho) como referencia base.
-const PRINT_SCALE_BY_TALLA: Record<string, number> = {
-  S: 25 / 27,
-  M: 1,
-  L: 1,
-  XL: 30 / 27,
-  '2XL': 30 / 27,
-};
+// Escala relativa (ancho y alto) del estampado según talla, tomando Talla M (27x37cm) como referencia base.
+// El escalado es proporcional al área disponible en cada talla y mantiene el centro del estampado fijo.
+const PRINT_REF = PRINT_DIMENSIONS_BY_TALLA.M;
+const getPrintScale = (talla: string) => ({
+  x: PRINT_DIMENSIONS_BY_TALLA[talla].w / PRINT_REF.w,
+  y: PRINT_DIMENSIONS_BY_TALLA[talla].h / PRINT_REF.h,
+});
 
 export default function ConfiguradorPremium() {
   // --- STATE ---
@@ -133,7 +136,7 @@ export default function ConfiguradorPremium() {
   const viewerImg = (selectedBase === 'tee' || uploadedDesign) ? currentColor.img : base.img;
   const printOverlayImg = uploadedDesign || print.img;
   const printMeasure = selectedPlacement === 'pecho' ? LOGO_PECHO_SIZE : PRINT_SIZE_BY_TALLA[size];
-  const printScale = selectedPlacement === 'pecho' ? 1 : PRINT_SCALE_BY_TALLA[size];
+  const printScale = selectedPlacement === 'pecho' ? { x: 1, y: 1 } : getPrintScale(size);
   
   const unitPrice = base.price + PRINT_PRICE;
   const subtotal = unitPrice * quantity;
@@ -369,9 +372,9 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                 />
                 {/* Simulated overlay for print preview */}
                 <div className={`absolute inset-0 flex items-center justify-center pointer-events-none ${uploadedDesign ? '' : 'mix-blend-multiply opacity-80'}`}>
-                   <img src={printOverlayImg} className="w-1/3 transition-transform duration-1000 group-hover:scale-[1.35]" style={{
+                   <img src={printOverlayImg} className="w-1/3 transition-transform duration-1000 group-hover:scale-[1.35] origin-center" style={{
                      transform: selectedPlacement === 'pecho' ? 'translateY(-20%) scale(0.6)' : 
-                                selectedPlacement === 'espalda' ? `scale(${printScale})` : `translateX(-30%) translateY(-10%) scale(${0.4 * printScale})`
+                                selectedPlacement === 'espalda' ? `scale(${printScale.x}, ${printScale.y})` : `translateX(-30%) translateY(-10%) scale(${0.4 * printScale.x}, ${0.4 * printScale.y})`
                    }} />
                 </div>
               </div>
@@ -442,11 +445,11 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                   <div className="mt-3 flex items-center gap-2 text-xs font-mono text-muted-foreground">
                     <Ruler className="w-3.5 h-3.5 shrink-0" />
                     <span>
-                      MEDIDA DEL ESTAMPADO ({size}{selectedPlacement === 'pecho' ? ', pecho' : ''}): <span className="font-bold text-foreground">{printMeasure}</span>
+                      TALLA {size} — MEDIDA DEL ESTAMPADO{selectedPlacement === 'pecho' ? ' (pecho)' : ''}: <span className="font-bold text-foreground">{printMeasure}</span>
                     </span>
                   </div>
                   <div className="mt-2 font-mono text-[10px] text-muted-foreground/80 leading-relaxed">
-                    Talla S: 25 × 35 cm · Talla M y L: 27 × 39 cm · Talla XL y 2XL: 30 × 41 cm · Logotipos (pecho): 10 × 10 cm
+                    Talla S: 25 × 35 cm · Talla M: 27 × 37 cm · Talla L: 29 × 39 cm · Talla XL: 31 × 41 cm · Talla 2XL: 33 × 43 cm · Logotipos (pecho): 10 × 10 cm
                   </div>
                 </div>
                 
