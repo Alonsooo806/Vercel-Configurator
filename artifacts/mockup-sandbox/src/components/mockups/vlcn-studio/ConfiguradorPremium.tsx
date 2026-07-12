@@ -14,7 +14,7 @@ const BASES = [
     price: 4000, 
     specs: '100% Algodón Peinado, 220 g/m²', 
     fitLabel: 'TALLA: S, M, L, XL, 2XL',
-    img: `generated_images/vlcn-base-tee.png` 
+    img: `generated_images/vlcn-emerald-card-white.png` 
   },
   { 
     id: 'longsleeve', 
@@ -27,14 +27,14 @@ const BASES = [
 ];
 
 const COLORS = [
-  { id: 'negro', name: 'NEGRO', hex: '#000000', img: `generated_images/vlcn-shirt-negro-white.png` },
-  { id: 'blanco', name: 'BLANCO', hex: '#FFFFFF', img: `generated_images/vlcn-shirt-blanco-white.png` },
-  { id: 'rojo', name: 'ROJO', hex: '#DC2626', img: `generated_images/vlcn-shirt-rojo-white.png` },
-  { id: 'naranjo', name: 'NARANJO', hex: '#F97316', img: `generated_images/vlcn-shirt-naranjo-white.png` },
-  { id: 'amarillo', name: 'AMARILLO', hex: '#EAB308', img: `generated_images/vlcn-shirt-amarillo-white.png` },
-  { id: 'verde', name: 'VERDE', hex: '#16A34A', img: `generated_images/vlcn-shirt-verde-white.png` },
-  { id: 'azul', name: 'AZUL', hex: '#2563EB', img: `generated_images/vlcn-shirt-azul-white.png` },
-  { id: 'violeta', name: 'VIOLETA', hex: '#7C3AED', img: `generated_images/vlcn-shirt-violeta-white.png` },
+  { id: 'negro', name: 'NEGRO', hex: '#000000', img: `generated_images/vlcn-emerald-negro.png` },
+  { id: 'blanco', name: 'BLANCO', hex: '#FFFFFF', img: `generated_images/vlcn-emerald-blanco.png` },
+  { id: 'rojo', name: 'ROJO', hex: '#DC2626', img: `generated_images/vlcn-emerald-rojo.png` },
+  { id: 'naranjo', name: 'NARANJO', hex: '#F97316', img: `generated_images/vlcn-emerald-naranjo.png` },
+  { id: 'amarillo', name: 'AMARILLO', hex: '#EAB308', img: `generated_images/vlcn-emerald-amarillo.png` },
+  { id: 'verde', name: 'VERDE', hex: '#16A34A', img: `generated_images/vlcn-emerald-verde.png` },
+  { id: 'azul', name: 'AZUL', hex: '#2563EB', img: `generated_images/vlcn-emerald-azul.png` },
+  { id: 'violeta', name: 'VIOLETA', hex: '#7C3AED', img: `generated_images/vlcn-emerald-violeta.png` },
 ];
 
 const PRINTS = [
@@ -131,7 +131,6 @@ export default function ConfiguradorPremium() {
   const [city, setCity] = useState<'temuco' | 'otra'>('temuco');
   const [comuna, setComuna] = useState('');
 
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const [selectedColor, setSelectedColor] = useState('blanco');
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
@@ -156,7 +155,7 @@ export default function ConfiguradorPremium() {
   const currentColor = COLORS[colorIndex];
   const previewColor = COLORS.find(c => c.id === hoveredColor) || currentColor;
   const nextColor = () => setSelectedColor(COLORS[(colorIndex + 1) % COLORS.length].id);
-  const viewerImg = 'generated_images/vlcn-emerald-tee.png';
+  const viewerImg = previewColor.img;
   // El estampado de un diseño propio subido por el cliente siempre sigue la Tabla de Escalamiento
   // completa (S 25×35 … 2XL 33×43), sin excepción de tamaño fijo. La excepción de logo fijo
   // (10×10cm) sólo aplica al placement "pecho" cuando se usa un gráfico de catálogo pequeño.
@@ -268,7 +267,7 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
                       <div className="aspect-square bg-muted mb-4 overflow-hidden relative">
                         {b.id === 'tee' ? (
                           <>
-                            <img src={currentColor.img} alt={`${b.name} - ${currentColor.name}`} className={`w-full h-full object-cover transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
+                            <img src={`generated_images/vlcn-emerald-card-white.png`} alt={`${b.name} - BLANCO`} className={`w-full h-full object-cover transition-transform duration-700 ${selectedBase === b.id ? 'scale-105' : 'group-hover:scale-110'}`} />
                             <button
                               onClick={(e) => { e.stopPropagation(); nextColor(); }}
                               className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-foreground rounded-full p-2 shadow-lg transition-transform hover:scale-110"
@@ -670,9 +669,9 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
               >
                 <Save className="w-5 h-5" />
               </button>
-              <button onClick={() => setCheckoutOpen(true)} className="bg-foreground text-background font-mono text-sm h-12 lg:h-14 px-6 flex-1 flex items-center justify-center gap-2 hover:bg-accent transition-colors group">
-                <span className="hidden sm:inline">INICIAR PEDIDO</span>
-                <span className="sm:hidden">PEDIR</span>
+              <button onClick={() => { window.location.href = 'https://www.webpay.transbank.cl'; }} className="bg-foreground text-background font-mono text-sm h-12 lg:h-14 px-6 flex-1 flex items-center justify-center gap-2 hover:bg-accent transition-colors group">
+                <span className="hidden sm:inline">FINALIZAR COMPRA</span>
+                <span className="sm:hidden">PAGAR</span>
                 <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </button>
             </div>
@@ -765,64 +764,6 @@ Configuración actual: ${base.name} (${size}) + Print ${print.name} en ${placeme
         </div>
       )}
 
-      {/* WEBPAY CHECKOUT MODAL */}
-      {checkoutOpen && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 font-sans">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setCheckoutOpen(false)}></div>
-
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-            {/* Security band */}
-            <div className="h-2 w-full bg-gradient-to-r from-purple-600 via-fuchsia-500 to-teal-400"></div>
-
-            {/* Header */}
-            <div className="px-6 sm:px-8 pt-6 pb-4 flex items-center justify-between border-b border-slate-100">
-              <div className="leading-none">
-                <p className="text-2xl font-black tracking-tight lowercase italic text-purple-800">webpay<span className="text-teal-500">.</span></p>
-                <p className="text-[10px] font-mono uppercase tracking-widest text-slate-400 mt-0.5">Transbank · Pago Seguro</p>
-              </div>
-              <button onClick={() => setCheckoutOpen(false)} className="text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="px-6 sm:px-8 py-6 space-y-6">
-              {/* Resumen */}
-              <div>
-                <p className="text-xs text-slate-500">Estás pagando en:</p>
-                <p className="font-bold text-slate-900 tracking-tight">VLCN STUDIO</p>
-                <div className="mt-4 flex items-baseline justify-between border-t border-slate-100 pt-4">
-                  <span className="text-xs font-mono uppercase text-slate-500">Monto Total</span>
-                  <span className="text-3xl font-black text-slate-900 tracking-tighter">{formatCLP(total)}</span>
-                </div>
-              </div>
-
-              {/* Redirección externa a Webpay */}
-              <div className="flex flex-col items-center gap-3 py-6 rounded-xl border border-dashed border-slate-200 bg-slate-50 text-center px-4">
-                <ShieldCheck className="w-8 h-8 text-purple-700" />
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  Serás redirigido al sitio oficial y seguro de <span className="font-bold text-purple-800">Webpay Plus (Transbank)</span> para ingresar los datos de tu tarjeta. VLCN Studio nunca almacena ni ve tu información de pago.
-                </p>
-              </div>
-
-              {/* CTA */}
-              <button
-                onClick={() => setCheckoutOpen(false)}
-                className="w-full bg-purple-900 hover:bg-purple-950 text-white font-bold text-sm py-4 rounded-xl transition-colors tracking-wide"
-              >
-                Pagar con Webpay
-              </button>
-
-              {/* Link de salida */}
-              <button
-                onClick={() => { window.location.href = import.meta.env.BASE_URL; }}
-                className="w-full text-center text-xs text-slate-400 hover:text-slate-600 underline underline-offset-2"
-              >
-                Anular compra y volver a VLCN STUDIO
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

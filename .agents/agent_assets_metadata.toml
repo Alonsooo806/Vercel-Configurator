@@ -66,3 +66,9 @@ id = "sgVnbhI8WrDnjwl2A4ZOd"
 uri = "file://screenshots/vlcn-configurador-emerald.jpg"
 type = "image"
 title = "VLCN Configurador - Emerald T-shirt"
+
+[[outputs]]
+id = "uImdKwSY6PTmIkZBuc6po"
+uri = "file://screenshots/vlcn-configurador-v4.jpg"
+type = "image"
+title = "VLCN Configurador V4 - Color Preview + Webpay Redirect"
